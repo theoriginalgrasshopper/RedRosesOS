@@ -45,7 +45,7 @@ cat              | cat
 
 
 The ISO file of the O.S. is located in the [releases](https://github.com/theoriginalgrasshopper/RedRosesOS/releases) page.
-To run the O.S. with QEMU, use the following command: <br>```qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0``` <br>
+To run the O.S. with QEMU, use the following command: <br>```qemu-system-x86_64 -M q35 -m 2G -cdrom RedRosesOS.iso -boot d -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0``` <br>
 The q35 graphics card is what works.
 
 ## ---BUILD---
