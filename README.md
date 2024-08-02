@@ -32,7 +32,7 @@ sound-stop       | stops the sound of the PC speaker   <br>
 
 explode          | originally made and implemented by pac-ac in osakaOS, flashes colours rapidly and produces a loud screech   <br>
 cowsay           | accepts one argument, originally made by Tony Monroe, displays a cow saying a specified message  <br>
-say              | accepts two arguments, prints a specified message the specified amount of times  <br>
+<br>say              | accepts two arguments, prints a specified message the specified amount of times  <br>
 math             | accepts 3 arguments, allows for simple operations with integers     <br>
 rosefetch        | displays general information about the system   <br>
 random           | accepts two arguments, prints out a pseudo-random value in specified range   <br>
