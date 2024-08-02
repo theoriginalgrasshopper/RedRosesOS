@@ -20,22 +20,22 @@ reboot           | reboots the system
 ### VISUAL--
 
 start-menu       | shows the start menu  
-pixel            | accepts three arguments, draws a specified pixel at specified coordinates     |     pixel <x> <y> <colour in hex>  
+pixel            | accepts three arguments, draws a specified pixel at specified coordinates      
 
 ### SOUND--
 
-sound-play       | accepts one argument, plays a tone in specified frequency    |    sound-play <frequency>  
-sound-play-timed | accepts two arguments, plays a tone in specified frequency for a specified amount of ticks. 87 ticks is equal to a second    |    sound-play-timed <frequency> <ticks>  
+sound-play       | accepts one argument, plays a tone in specified frequency    
+sound-play-timed | accepts two arguments, plays a tone in specified frequency for a specified amount of ticks. 87 ticks is equal to a second
 sound-stop       | stops the sound of the PC speaker  
 
 ### MISC--
 
 explode          | originally made and implemented by pac-ac in osakaOS, flashes colours rapidly and produces a loud screech  
-cowsay           | accepts one argument, originally made by Tony Monroe, displays a cow saying a specified message    |    cowsay <"message">  
-say              | accepts two arguments, prints a specified message the specified amount of times    |    say <"message"> <"amount">  
-math             | accepts 3 arguments, allows for simple operations with integers    |    math <num one> <operator> <num two>
+cowsay           | accepts one argument, originally made by Tony Monroe, displays a cow saying a specified message 
+say              | accepts two arguments, prints a specified message the specified amount of times 
+math             | accepts 3 arguments, allows for simple operations with integers    
 rosefetch        | displays general information about the system  
-random           | accepts two arguments, prints out a pseudo-random value in specified range    |    random <num one> <num two>
+random           | accepts two arguments, prints out a pseudo-random value in specified range  
 cat              | cat 
 
 ![alt text](https://github.com/theoriginalgrasshopper/RedRosesOS/blob/main/showcase.png?raw=true)
