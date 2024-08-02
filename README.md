@@ -19,23 +19,23 @@ reboot           | reboots the system
 
 ### VISUAL--
 
-start-menu       | shows the start menu  
-pixel            | accepts three arguments, draws a specified pixel at specified coordinates      
+start-menu       | shows the start menu  <br>
+pixel            | accepts three arguments, draws a specified pixel at specified coordinates       <br>
 
 ### SOUND--
 
-sound-play       | accepts one argument, plays a tone in specified frequency    
-sound-play-timed | accepts two arguments, plays a tone in specified frequency for a specified amount of ticks. 87 ticks is equal to a second
-sound-stop       | stops the sound of the PC speaker  
+sound-play       | accepts one argument, plays a tone in specified frequency     <br>
+sound-play-timed | accepts two arguments, plays a tone in specified frequency for a specified amount of ticks. 87 ticks is equal to a second <br>
+sound-stop       | stops the sound of the PC speaker   <br>
 
 ### MISC--
 
-explode          | originally made and implemented by pac-ac in osakaOS, flashes colours rapidly and produces a loud screech  
-cowsay           | accepts one argument, originally made by Tony Monroe, displays a cow saying a specified message 
-say              | accepts two arguments, prints a specified message the specified amount of times 
-math             | accepts 3 arguments, allows for simple operations with integers    
-rosefetch        | displays general information about the system  
-random           | accepts two arguments, prints out a pseudo-random value in specified range  
+explode          | originally made and implemented by pac-ac in osakaOS, flashes colours rapidly and produces a loud screech   <br>
+cowsay           | accepts one argument, originally made by Tony Monroe, displays a cow saying a specified message  <br>
+say              | accepts two arguments, prints a specified message the specified amount of times  <br>
+math             | accepts 3 arguments, allows for simple operations with integers     <br>
+rosefetch        | displays general information about the system   <br>
+random           | accepts two arguments, prints out a pseudo-random value in specified range   <br>
 cat              | cat 
 
 ![alt text](https://github.com/theoriginalgrasshopper/RedRosesOS/blob/main/showcase.png?raw=true)
