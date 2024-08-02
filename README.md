@@ -56,8 +56,8 @@ To build the O.S, you will need a couple of dependencies.
 nasm,
 xorriso**,
 
-```git clone https://github.com/theoriginalgrasshopper/RedRosesOS.git``` <br \>
-```cd RedRosesOS``` <br \>
+```git clone https://github.com/theoriginalgrasshopper/RedRosesOS.git``` <br>
+```cd RedRosesOS``` <br>
 ```make run```
 
 
