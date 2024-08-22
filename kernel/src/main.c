@@ -16,6 +16,9 @@
 #include <c_programs/clear_and_print.h>
 #include <a_tools/timer.h>
 #include <c_programs/start_menu.h>
+#include <memory_management/pmm.h>
+#include <drivers/mouse.h>
+#include <gui/mode.h>
 //#include "screen.c"
 // Set the base revision to 2, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -175,11 +178,19 @@ void _start(void) {
     keyboard_init();
     IDT_init();
     keyboard_init();
+    mouse_init();
+    keyboard_init();
+
+    // DRIVE
+
+
     clear_screen();
     cursor_pos_y = 0;
     main_menu();
     initTimer();
     playSoundTimed(880, 2);
+    extern int mode;
+    mode = 1;
     //clear_screen();
    // sprint("clear screen works ! \n", 0xffffff);
     //sprint("what the fuck", 0x123123);

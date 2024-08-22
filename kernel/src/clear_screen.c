@@ -17,6 +17,13 @@ void fill_screen(int colour) {
         }
     }
 }
+void draw_rectangle(int colour, int starty, int startx, int y, int x) {
+    for (int y_pos = 0; y_pos < y; y_pos++) {
+        for (int x_pos = 0; x_pos < x; x_pos++) {
+            set_pixel(x_pos + startx, y_pos + starty, colour);
+        }
+    }
+}
 
 
 

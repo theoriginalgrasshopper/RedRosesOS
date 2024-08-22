@@ -16,3 +16,6 @@ void draw_cmd_cursor_animation(){
 void draw_cmd_cursor_animation_white(){
     print_char_at('_', cursor_pos_x, cursor_pos_y, white);
 }
+void stop_cmd_cursor(){
+    cmd_cursor_delay = false;
+}

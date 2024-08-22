@@ -20,15 +20,19 @@ endef
 # the host system's toolchain, but this is not guaranteed.
 override DEFAULT_KCC := cc
 $(eval $(call DEFAULT_VAR,KCC,$(DEFAULT_KCC)))
+override DEFAULT_KCPP := g++
+$(eval $(call DEFAULT_VAR,KCPP,$(DEFAULT_KCPP)))
 
 # Same thing for "ld" (the linker).
 override DEFAULT_KLD := ld
 $(eval $(call DEFAULT_VAR,KLD,$(DEFAULT_KLD)))
 
 # User controllable C flags.
-override DEFAULT_KCFLAGS := -g -O2 -pipe
+override DEFAULT_KCFLAGS := -g -O2 -pipe -fPIE
 $(eval $(call DEFAULT_VAR,KCFLAGS,$(DEFAULT_KCFLAGS)))
 
+override DEFAULT_KCXXFLAGS := -g -O2 -pipe -fPIE
+$(eval $(call DEFAULT_VAR,KCXXFLAGS,$(DEFAULT_KCXXFLAGS)))
 # User controllable C preprocessor flags. We set none by default.
 override DEFAULT_KCPPFLAGS :=
 $(eval $(call DEFAULT_VAR,KCPPFLAGS,$(DEFAULT_KCPPFLAGS)))
@@ -40,6 +44,24 @@ $(eval $(call DEFAULT_VAR,KNASMFLAGS,$(DEFAULT_KNASMFLAGS)))
 # User controllable linker flags. We set none by default.
 override DEFAULT_KLDFLAGS :=
 $(eval $(call DEFAULT_VAR,KLDFLAGS,$(DEFAULT_KLDFLAGS)))
+
+# Internal C++ flags that should not be changed by the user.
+override KCXXFLAGS += \
+    -Wall \
+    -Wextra \
+    -std=gnu++17 \
+    -ffreestanding \
+    -fno-stack-protector \
+    -fno-stack-check \
+    -fno-lto \
+    -fPIE \
+    -m64 \
+    -march=x86-64 \
+    -mno-80387 \
+    -mno-mmx \
+    -mno-sse \
+    -mno-sse2 \
+    -mno-red-zone
 
 # Internal C flags that should not be changed by the user.
 override KCFLAGS += \

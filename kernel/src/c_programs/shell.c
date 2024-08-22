@@ -14,12 +14,12 @@
 #include <clear_screen.h>
 #include <a_tools/random.h>
 #include "start_menu.h"
-
-
-
-
-
+#include "cmd_cursor.h"
+#include <memory_management/pmm.h>
+#include <gui/gui_draw.h>
+#include <gui/mode.h>
         // ALL THE COMMANDS
+extern int mode;
 void command_init(){
 
     // COMMANDS WITHOUT ARGUMENTS
@@ -57,11 +57,20 @@ void command_init(){
     if ( string_same(input_buffer, "sound-stop") ){
         stopSound();
     }
+    if ( string_same(input_buffer, "pmm-init") ){
+       sprint("PMM DOES NOT WORK. YOU NOW NEED TO RESTART THE MACHINE.\n\n", magenta);
+       pmm_init();
+       //pmm_alloc(2);
+    }
     if ( string_same(input_buffer, "scroll") ){
         scroll_pixel_line();
     }
     if ( string_same(input_buffer, "cat") ){
         draw_rle_image(rle_image, rle_image_size, cursor_pos_x, cursor_pos_y);
+    }
+    if ( string_same(input_buffer, "gui") ){
+        stop_cmd_cursor();
+        gui_init();
     }
     if ( string_same(input_buffer, "help") ){
         sprint("AVIABLE COMMANDS: \n\n", blue);
@@ -70,7 +79,8 @@ void command_init(){
         sprint("about            | shows information about RedRosesOS \n", white);
         sprint("help             | shows this message \n", white);
         sprint("qemu-shutdown    | shuts down QEMU ver. 2.0 and newer \n", white);
-        sprint("reboot           | reboots the system \n\n", white);
+        sprint("reboot           | reboots the system \n", white);
+        sprint("pmm-init         | does not work \n\n", white);
         sprint("VISUAL \n\n", green);
         sprint("start-menu       | shows start menu \n", white);
         sprint("pixel            | accepts three arguments, draws a specified pixel at specified coordinates \n\n", white);
@@ -103,8 +113,7 @@ void command_init(){
     math();
 
     // SHELL CHARACTER
-
-    sprint_char('#', red);
+    if(mode == 1)sprint_char('#', red);
 }
 
 void shift_button_pressed(){

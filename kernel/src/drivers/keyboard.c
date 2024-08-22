@@ -12,7 +12,7 @@
 #include <a_tools/convert_to_int.h>
 #include <c_programs/cmd_cursor.h>
 #include <c_programs/clear_and_print.h>
-
+#include <gui/mode.h>
 // SHELL JUNK. MOVE TO SHELL.C IN THE FUTURE
 void str_copy(char *source, char *destination) {
     while (*source != '\0') {
@@ -82,11 +82,13 @@ char ascii_US[] = { '?', '?', '1', '2', '3', '4', '5', '6',
 
 
 char input_buffer[256];
+char input_buffer_graphic[256];
 char input_buffer_history[256];
 bool shift_pressed;
 bool backspace_pressed;
 bool enter_pressed;
 bool caps_pressed;
+extern int mode;
 
 // deprecated behaviour. Should be ceased as soon as possible
 
@@ -122,12 +124,19 @@ InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
 
 
             case ENTER:
-                enter_pressed = true;
-                print_char_at('_', cursor_pos_x, cursor_pos_y, black);
-                command_init();
-                user_input(input_buffer);
-                str_copy(input_buffer, input_buffer_history);
-                input_buffer[0] = '\0';
+                if (mode == 1){
+                    enter_pressed = true;
+                    print_char_at('_', cursor_pos_x, cursor_pos_y, black);
+                    command_init();
+                    user_input(input_buffer);
+                    str_copy(input_buffer, input_buffer_history);
+                    input_buffer[0] = '\0';
+                }
+                if (mode == 2){
+                    stop_cmd_cursor();
+                    user_input(input_buffer_graphic);
+                    input_buffer_graphic[0] = '\0';
+                }
             break;
             case DOWN:
                 scroll_pixel_line();
@@ -190,9 +199,14 @@ InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
                 if (shift_pressed && c == 46) c = 62; // >, .
                 if (shift_pressed && c == 39) c = 34; // ", '
                 if (scancode != LSHIFT && scancode != 72) { // <-------- ^ < > keys
-				    append(input_buffer, c);
-				    sprint_char(c, white);
-                    init_cmd_cursor();
+				    if(mode == 1){
+                        append(input_buffer, c);
+                        sprint_char(c, white);
+                        init_cmd_cursor();
+                    }
+                    if(mode == 2){
+                        append(input_buffer_graphic, c);
+                    }
                     // debug scancode 
                    // char scancode_string[255];
                    // int_to_str(scancode, scancode_string);

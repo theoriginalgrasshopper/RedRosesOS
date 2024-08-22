@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "idt.h": "c",
+        "start_menu.h": "c",
+        "sprint.h": "c",
+        "constants.h": "c",
+        "draw_image.h": "c",
+        "stdint.h": "c"
+    }
+}

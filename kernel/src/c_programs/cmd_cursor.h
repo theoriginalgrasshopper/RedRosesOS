@@ -7,5 +7,5 @@ extern int cursor_pos_x;
 void init_cmd_cursor();
 void draw_cmd_cursor_animation();
 void draw_cmd_cursor_animation_white();
-
+void stop_cmd_cursor();
 #endif
