@@ -7,6 +7,8 @@
 #include <screen.h>
 #include "mouse.h"
 #include <stdbool.h>
+#include <sprint.h>
+#include <a_tools/convert_to_int.h>
 
 // Ports (same as keyboard)
 
@@ -23,10 +25,16 @@ static int8_t mouse_byte[3];
 static int32_t mouse_x = 0;
 static int32_t mouse_y = 0;
 
-// mouse l r
+static int32_t prev_mouse_x = 0;
+static int32_t prev_mouse_y = 0;
+
+// mouse l m r
 
 static bool left_pressed = false;
 static bool right_pressed = false;
+static bool middle_pressed = false;
+
+
 
 // the meat and potatoes, the handler
 
@@ -54,11 +62,30 @@ InterruptRegisters* mouse_handler(InterruptRegisters* regs) {
             int8_t y = mouse_byte[2];
 
             // negative?
+
             if (mouse_byte[0] & 0x10) x |= 0xFFFFFF00;  
             if (mouse_byte[0] & 0x20) y |= 0xFFFFFF00;  
 
             mouse_x += x;
             mouse_y -= y;  // y is quirky
+
+            // limit the thing
+
+            if (mouse_x >= 1280){
+                mouse_x = 1279;
+            }
+            else if (mouse_x <= 0){
+                mouse_x = 1;
+            }
+
+            if (mouse_y >= 800){
+                mouse_y = 799;
+            }
+            else if (mouse_y <= 0){
+                mouse_y = 1;
+            }
+
+            // cursor
 
             cursor_draw();
 
@@ -70,7 +97,8 @@ InterruptRegisters* mouse_handler(InterruptRegisters* regs) {
             
             left_pressed = mouse_byte[0] & 0x01;
             right_pressed = mouse_byte[0] & 0x02;
-            
+            middle_pressed = mouse_byte[0] & 0x04;
+
             break;      
     }
     return regs;
@@ -115,15 +143,41 @@ void mouse_wait(uint8_t type) {
         }
     }
 }
-void cursor_draw(){
+
+uint32_t prev_colour;
+uint32_t prev_colour2;
+uint32_t prev_colour3;
+void cursor_draw() {
+    // erase cursor
+    set_pixel(prev_mouse_x, prev_mouse_y, prev_colour);
+    set_pixel(prev_mouse_x+1, prev_mouse_y+1, prev_colour2);
+    set_pixel(prev_mouse_x+2, prev_mouse_y+2, prev_colour3);
+
+    // set the colour to our mouse pos
+    prev_colour = read_pixel(mouse_x, mouse_y);
+    prev_colour2 = read_pixel(mouse_x+1, mouse_y+1);
+    prev_colour3 = read_pixel(mouse_x+2, mouse_y+2);
+    // draw cursor
     set_pixel(mouse_x, mouse_y, white);
-        if (left_pressed == true){
-            print_char_at('L', mouse_x/8, mouse_y/8, yellow);
-        }
-        if (right_pressed == true){
-            print_char_at('R', mouse_x/8, mouse_y/8, magenta);
-        }
+    set_pixel(mouse_x+1, mouse_y+1, white);
+    set_pixel(mouse_x+2, mouse_y+2, white);
+
+    // trickery
+    prev_mouse_x = mouse_x;
+    prev_mouse_y = mouse_y;
+
+    // clicks
+    if (left_pressed) {
+        
+    }
+    if (right_pressed) {
+        
+    }
+    if (middle_pressed) {
+        
+    }
 }
+
 
 void mouse_write(uint8_t data) {
     mouse_wait(1);

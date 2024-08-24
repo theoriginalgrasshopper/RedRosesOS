@@ -13,6 +13,11 @@ void set_pixel(int x, int y, uint32_t color) {
         fb_addr[get_offset(x, y)] = color;
     }
 
+uint32_t read_pixel(int x, int y) {
+    if ((x >= 0 && (uint64_t) x < 1280) && (y >= 0 && (uint64_t) y < 800))
+        return fb_addr[get_offset(x, y)];
+    }
+
 uint32_t get_offset(int x, int y) {
     return y * 1280 + x;
     }

@@ -19,6 +19,7 @@
 #include <memory_management/pmm.h>
 #include <drivers/mouse.h>
 #include <gui/mode.h>
+#include <drivers/disk/ata.h>
 //#include "screen.c"
 // Set the base revision to 2, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -191,6 +192,8 @@ void _start(void) {
     playSoundTimed(880, 2);
     extern int mode;
     mode = 1;
+    clear_and_print();
+    ATA_ALL_INIT();
     //clear_screen();
    // sprint("clear screen works ! \n", 0xffffff);
     //sprint("what the fuck", 0x123123);
