@@ -33,7 +33,7 @@ run-hdd: $(IMAGE_NAME).hdd
 
 .PHONY: run-img
 run-img: $(IMAGE_NAME).img
-	qemu-system-x86_64 -M pc -m 2G -hda RedRosesOS.img -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio
+	qemu-system-x86_64 -M pc -m 2G -drive file=RedRosesOS.img,format=raw -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio
 
 .PHONY: run-hdd-uefi
 run-hdd-uefi: ovmf $(IMAGE_NAME).hdd
@@ -85,7 +85,7 @@ $(IMAGE_NAME).img: limine/limine kernel
 	rm -f $(IMAGE_NAME).img
 	dd if=/dev/zero bs=1M count=0 seek=64 of=$(IMAGE_NAME).img
 	parted -s $(IMAGE_NAME).img mklabel msdos
-	parted -s $(IMAGE_NAME).img mkpart primary fat16 1M 100%
+	parted -s $(IMAGE_NAME).img mkpart primary fat32 1M 100%
 	parted -s $(IMAGE_NAME).img set 1 boot on
 	./limine/limine bios-install $(IMAGE_NAME).img
 	mformat -i $(IMAGE_NAME).img@@1M 

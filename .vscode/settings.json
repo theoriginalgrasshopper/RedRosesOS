@@ -5,6 +5,8 @@
         "sprint.h": "c",
         "constants.h": "c",
         "draw_image.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "keyboard.h": "c",
+        "io.h": "c"
     }
 }

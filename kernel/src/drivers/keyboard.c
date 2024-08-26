@@ -127,7 +127,6 @@ InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
                 if (mode == 1){
                     enter_pressed = true;
                     print_char_at('_', cursor_pos_x, cursor_pos_y, black);
-                    user_input(input_buffer);
                     command_init();
                     str_copy(input_buffer, input_buffer_history);
                     input_buffer[0] = '\0';

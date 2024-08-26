@@ -11,4 +11,6 @@ void sound_timed();
 void pixel();
 void random();
 void math();
+void diskr();
+void diskw();
 #endif

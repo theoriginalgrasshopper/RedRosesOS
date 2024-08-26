@@ -8,18 +8,15 @@
 #include <drivers/keyboard.h>
 #include <a_tools/convert_to_int.h>
 #include <a_tools/timer.h>
+#include <drivers/disk/ata.h>
 #include <a_tools/random.h>
+
 // FILE CONTAINS BOTH THE COWSAY BY Tony Monroe (https://github.com/tnalpgge/rank-amateur-cowsay)
 // PORTED BY theoriginalgrasshopper
 // AND THE ARGUMENT COMMAND INITIALIZATION
 
 // COMMANDS WITH ARGUMENTS INIT
 
-//bool found_argument_symbol = false;
-//bool found_second_argument_symbol = false; 
-//char characters_after_argsym[25]; // hehe 
-//char characters_before_argsym[25]; // hoho
-//char characters_after_argsym_second[25]; // hihi
 
 #define MAX_ARGUMENTS 10
 #define MAX_ARGUMENT_LENGTH 50
@@ -202,5 +199,36 @@ void math(){
         sprint(result_c, cyan);
         }
         sprint("\n", white);
+    }
+}
+void sprint_raw(uint8_t* data, int length, int color) {
+    for (int i = 0; i < length; i++) {
+        char text[2] = { data[i], '\0' }; // Ensure only one character is printed
+        sprint(text, color);
+    }
+    sprint("\n", white); // Add a newline at the end
+}
+void diskr(){
+    if (string_same(characters_before_argsym, "diskr")){
+        if (string_same(characters_after_argsym, "")){
+            sprint("WRONG SYNTAX.", red);
+        } else{
+            uint8_t sector = string_to_int(characters_after_argsym);
+            int count = string_to_int(characters_after_argsym_second);
+            uint8_t* data = ATA_Read28_PM(sector, count);
+            sprint_raw(data, count, blue);
+        }
+    }
+}
+void diskw(){
+    if (string_same(characters_before_argsym, "diskw")){
+        if (string_same(characters_after_argsym, "")){
+            sprint("WRONG SYNTAX.", red);
+        } else{
+            ATA_Flush_PM();
+            uint32_t sector = string_to_int(characters_after_argsym);
+            int count = string_to_int(characters_after_argsym_second);
+            ATA_Write28_PM(sector, (uint8_t*)characters_after_argsym_third, count);
+        }
     }
 }

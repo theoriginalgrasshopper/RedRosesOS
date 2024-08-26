@@ -18,6 +18,8 @@
 #include <memory_management/pmm.h>
 #include <gui/gui_draw.h>
 #include <gui/mode.h>
+#include <drivers/disk/mbr.h>
+
         // ALL THE COMMANDS
 extern int mode;
 void command_init(){
@@ -65,6 +67,9 @@ void command_init(){
     if ( string_same(input_buffer, "scroll") ){
         scroll_pixel_line();
     }
+    if ( string_same(input_buffer, "mbr-read") ){
+        read_mbr();
+    }
     if ( string_same(input_buffer, "cat") ){
         draw_rle_image(rle_image, rle_image_size, cursor_pos_x, cursor_pos_y);
     }
@@ -111,6 +116,8 @@ void command_init(){
     pixel();
     random();
     math();
+    diskr();
+    diskw();
 
     // SHELL CHARACTER
     if(mode == 1)sprint_char('#', red);
