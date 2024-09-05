@@ -135,7 +135,7 @@ This is a list of implemented and not features that will come with future releas
 
 ## Contributing
 
-Contributions to RedRosesOS are welcome! Please refer to the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started (coming soon).
+Contributions to RedRosesOS are welcome! Please refer to the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started (coming soon, for now, you can open PRs and issues freely).
 
 ---------
 
