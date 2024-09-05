@@ -123,18 +123,19 @@ This is a list of implemented and not features that will come with future releas
 - [x] IDT 
 - [x] Screen driver
 - [x] Keyboard driver
-- [ ] ATA PIO driver
-- [ ] FAT12/16/32 filesystem driver
-- [ ] Memory Management
+- [X] ATA PIO driver
+- [X] FAT12/16/32 filesystem driver
+- [X] Memory Management
 - [ ] ELF support
+- [ ] Multitasking
 - [ ] Windowing system
-- [ ] Mouse driver
+- [X] Mouse driver
 - [ ] Networking 
 - [ ] Web browser
 
 ## Contributing
 
-Contributions to RedRosesOS are welcome! Please refer to our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started (coming soon).
+Contributions to RedRosesOS are welcome! Please refer to the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started (coming soon).
 
 ---------
 
