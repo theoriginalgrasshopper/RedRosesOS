@@ -29,7 +29,7 @@ RedRosesOS is a monolithic hobbyist 64-bit operating system written in C.
 
 RedRosesOS supports the following commands:
 
-### General
+### GENERAL
 
 | Command | Description |
 |---------|-------------|
