@@ -1,0 +1,2 @@
+*RedRosesOS.iso filter=lfs diff=lfs merge=lfs -text
+*RedRosesOS.img filter=lfs diff=lfs merge=lfs -text

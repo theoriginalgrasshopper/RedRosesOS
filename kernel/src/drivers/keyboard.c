@@ -40,6 +40,18 @@ int string_compare(char* s1, char* s2) {
 bool string_same(char* str1, char* str2) {
     return string_compare(str1, str2) == 0;
 }
+bool string_contains(char* str1, char* str2) {
+    if (str2[0] == '\0') {
+        return true;
+    }
+
+    for (size_t i = 0; str1[i] != '\0'; i++) {
+        if (string_compare(&str1[i], str2) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
 
 size_t strlen(char* str) {
     size_t i = 0;

@@ -7,6 +7,8 @@
 #include <interrupts/irq.h>
 #include <a_tools/convert_to_int.h>
 #include "ata.h"
+#include <string.h>
+#include <include/util.h>
 #define ATA_SECTOR_SIZE 512
 // This is going to be bad... oh no
 // so this is like a VERY bad thing to do, but i do not care, it works
@@ -124,7 +126,6 @@ uint8_t* ATA_Read28_PM(uint32_t sectorNum, int count){
 
     sprint("Reading ATA drive: ", green);
 
-    // Read data into the static buffer
     for (int i = 0; i < ATA_SECTOR_SIZE; i += 2) {
         uint16_t wdata = inw_special(PM_DATA_PORT);
         ata_read_buffer[i] = wdata & 0xFF;
@@ -133,7 +134,7 @@ uint8_t* ATA_Read28_PM(uint32_t sectorNum, int count){
         }
     }
 
-    // Print the data that was read (optional)
+    // prints out the thing
     for (int i = 0; i < count; i++) {
         char text[2] = {ata_read_buffer[i], '\0'};
         sprint(text, green);
@@ -141,8 +142,58 @@ uint8_t* ATA_Read28_PM(uint32_t sectorNum, int count){
 
     sprint("\n", white);
 
-    // Return the buffer pointer to allow further use of the data
     return ata_read_buffer;
+}
+
+void ATA_Read28_PM_INTO_BUFFER(uint32_t sectorNum, int count, char* buffer) {
+    if (count > ATA_SECTOR_SIZE) {
+        count = ATA_SECTOR_SIZE;
+    }
+
+    memset(buffer, 0, count);
+
+    if (sectorNum > 0x0FFFFFFF) {
+        sprint("sector number was above the limit, aborting \n", red);
+        return;
+    }
+
+    // send commands to the device as before
+    outb_special(PM_DEVICE_PORT, (PM_MASTER ? 0xE0 : 0xF0) | ((sectorNum & 0x0F000000) >> 24));
+    outb_special(PM_ERROR_PORT, 0);
+    outb_special(PM_SECTOR_COUNT_PORT, 1);
+    outb_special(PM_LBA_LOW_PORT, sectorNum & 0x000000FF);
+    outb_special(PM_LBA_MID_PORT, (sectorNum & 0x0000FF00) >> 8);
+    outb_special(PM_LBA_HI_PORT, (sectorNum & 0x00FF0000) >> 16);
+    outb_special(PM_COMMAND_PORT, 0x20);
+
+    uint8_t status = inb_special(PM_COMMAND_PORT);
+
+    while (((status & 0x80) == 0x80) || ((status & 0x08) != 0x08)) {
+        status = inb_special(PM_COMMAND_PORT);
+    }
+    if (status & 0x01) {
+        sprint("status masked with 0x01, aborting \n", red);
+        return;
+    }
+
+    //sprint("Reading ATA drive: ", green);
+
+    // read data into the provided buffer
+    for (int i = 0; i < count; i += 2) {
+        uint16_t wdata = inw_special(PM_DATA_PORT);
+        buffer[i] = wdata & 0xFF;
+        if (i + 1 < count) {
+            buffer[i + 1] = (wdata >> 8) & 0xFF;
+        }
+    }
+
+    //print the data that was read (optional)
+    // for (int i = 0; i < count; i++) {
+    //     char text[2] = {buffer[i], '\0'};
+    //     sprint(text, green);
+    // }
+
+    // sprint("\n", white);
 }
 
 // 118
@@ -167,7 +218,7 @@ void ATA_Write28_PM(uint32_t sectorNum, uint8_t* data, uint32_t count){
     
     outb_special(PM_COMMAND_PORT, 0x30);
 
-    sprint("Writing to ATA Drive: ", green);
+    //sprint("Writing to ATA Drive: ", green);
 
     for(int i = 0; i < count; i+= 2){
         uint16_t wdata = data[i];
@@ -175,15 +226,10 @@ void ATA_Write28_PM(uint32_t sectorNum, uint8_t* data, uint32_t count){
             wdata |= ((uint16_t)data[i+1]) << 8;
         }
         outw_special(PM_DATA_PORT, wdata);
-
-        char text[3];
-        int_to_str(wdata, text);
-        sprint(text, green);
     }
     for(int i = count + (count%2); i < 512; i += 2){
         outw_special(PM_DATA_PORT, 0x0000);
     }
-    sprint("\n", white);
 }
 
 void ATA_Flush_PM(){

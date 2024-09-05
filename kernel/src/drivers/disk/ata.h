@@ -7,6 +7,7 @@ void ATA_ALL_INIT();
 uint8_t* ATA_Read28_PM(uint32_t sectorNum, int count);
 void ATA_Write28_PM(uint32_t sectorNum, uint8_t* data, uint32_t count);
 void ATA_Flush_PM();
+void ATA_Read28_PM_INTO_BUFFER(uint32_t sectorNum, int count, char* buffer);
 //                                                                                   
 // primary master                                                                    
 

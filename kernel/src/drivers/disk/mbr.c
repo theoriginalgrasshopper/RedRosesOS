@@ -89,7 +89,7 @@ bool read_mbr() {
         
         sprint("  sector Count: ", yellow);
         char sector_count_str[12];
-        int_to_str(partition->sector_count, sector_count_str); // Assuming int_to_str is available
+        int_to_str(partition->sector_count, sector_count_str); 
         sprint(sector_count_str, green);
 
         sprint("\n", white);
@@ -115,9 +115,7 @@ bool read_mbr() {
                 sprint("\nFAT32 partition found at LBA: ", green);
                 sprint(lba_str, green);
                 sprint("\n", white);
-
-                ReadBiosBlock(2048);
-
+                Read_BPB(0);
                 break; // if fat32 found, exit
             }
         }

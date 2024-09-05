@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <sprint.h>
 #include <a_tools/convert_to_int.h>
+#include <drivers/disk/fat.h>
 
 // Ports (same as keyboard)
 
@@ -28,13 +29,32 @@ static int32_t mouse_y = 0;
 static int32_t prev_mouse_x = 0;
 static int32_t prev_mouse_y = 0;
 
+// mouse draw
+
+char row1[10];
+char row2[10];
+char row3[10];
+char row4[10];
+char row5[10];
+char row6[10];
+char row7[10];
+char row8[10];
+char row9[10];
+char row10[10];
+
+
 // mouse l m r
 
 static bool left_pressed = false;
 static bool right_pressed = false;
 static bool middle_pressed = false;
 
-
+void fill_char_arr(const char* source, char* dest, int start, int length) {
+    if (length > 0) {
+        memcpy(dest, source + start, length);
+        dest[length] = '\0'; 
+    }
+}
 
 // the meat and potatoes, the handler
 
@@ -97,13 +117,14 @@ InterruptRegisters* mouse_handler(InterruptRegisters* regs) {
             
             left_pressed = mouse_byte[0] & 0x01;
             right_pressed = mouse_byte[0] & 0x02;
-            middle_pressed = mouse_byte[0] & 0x04;
+            middle_pressed = mouse_byte[0] & 0x03;
 
             break;      
     }
     return regs;
 }
 void mouse_init() {
+    split_to_bitmap();
     // enable and wait for mouse
     mouse_wait(1);
     outb(MOUSE_STATUS_PORT, 0xA8);
@@ -144,38 +165,145 @@ void mouse_wait(uint8_t type) {
     }
 }
 
-uint32_t prev_colour;
-uint32_t prev_colour2;
-uint32_t prev_colour3;
+char* split_to_bitmap(){
+    const char* cursor = readfile_into_buffer("/ROS_ICOS   /MOS_ICO RSI");
+    // if no file exists like that
+    if(cursor == NULL){
+        str_copy("MQMQMQMQMQ", row1);
+        str_copy("QMQMQMQMQM", row2);
+        str_copy("MQMQMQMQMQ", row3);
+        str_copy("QMQMQMQMQM", row4);
+        str_copy("MQMQMQMQMQ", row5);
+        str_copy("QMQMQMQMQM", row6);
+        str_copy("MQMQMQMQMQ", row7);
+        str_copy("QMQMQMQMQM", row8);
+        str_copy("MQMQMQMQMQ", row9);
+        str_copy("QMQMQMQMQM", row10);
+        return;
+    }
+    // ill add more if i need lolololol 
+    fill_char_arr(cursor, row1, 0, CURSOR_WIDTH);
+    fill_char_arr(cursor, row2, 11, CURSOR_WIDTH);
+    fill_char_arr(cursor, row3, 22, CURSOR_WIDTH);
+    fill_char_arr(cursor, row4, 33, CURSOR_WIDTH);
+    fill_char_arr(cursor, row5, 44, CURSOR_WIDTH);
+    fill_char_arr(cursor, row6, 55, CURSOR_WIDTH);
+    fill_char_arr(cursor, row7, 66, CURSOR_WIDTH);
+    fill_char_arr(cursor, row8, 77, CURSOR_WIDTH);
+    fill_char_arr(cursor, row9, 88, CURSOR_WIDTH);
+    fill_char_arr(cursor, row10, 99, CURSOR_WIDTH);
+}
+
+void draw_bitmap(char* bitmap, int x, int y, uint32_t colour) {
+    int length = strlen(bitmap); 
+    for (int i = 0; i < length; i++) {
+        if (bitmap[i] == 'W') {
+            set_pixel(x + i, y, colour); 
+        }
+        if (bitmap[i] == 'Q') {
+            set_pixel(x + i, y, black);
+        }
+        if (bitmap[i] == 'R') {
+            set_pixel(x + i, y, red);
+        }
+        if (bitmap[i] == 'G') {
+            set_pixel(x + i, y, green);
+        }
+        if (bitmap[i] == 'B') {
+            set_pixel(x + i, y, blue);
+        }
+        if (bitmap[i] == 'Y') {
+            set_pixel(x + i, y, yellow);
+        }
+        if (bitmap[i] == 'M') {
+            set_pixel(x + i, y, magenta);
+        }
+    }
+}
+uint32_t read_bitmap(char* bitmap, int x, int y) {
+    int length = strlen(bitmap); 
+    for (int i = 0; i < length; i++) {
+        if (bitmap[i] == 'W') {
+            read_pixel(x + i, y); 
+        }
+        if (bitmap[i] == 'Q') {
+            read_pixel(x + i, y);
+        }
+        if (bitmap[i] == 'R') {
+            read_pixel(x + i, y);
+        }
+        if (bitmap[i] == 'G') {
+            read_pixel(x + i, y);
+        }
+        if (bitmap[i] == 'B') {
+            read_pixel(x + i, y);
+        }
+        if (bitmap[i] == 'Y') {
+            read_pixel(x + i, y);
+        }
+        if (bitmap[i] == 'M') {
+            read_pixel(x + i, y);
+        }
+    }
+}
+
+uint32_t original_pixels[CURSOR_WIDTH * CURSOR_HEIGHT]; 
+
+void store_original_pixels(int x, int y) {
+    int index = 0;
+    for (int row = 0; row < CURSOR_HEIGHT; row++) {
+        for (int col = 0; col < CURSOR_WIDTH; col++) {
+            original_pixels[index++] = read_pixel(x + col, y + row);
+        }
+    }
+}
+
+void restore_original_pixels(int x, int y) {
+    int index = 0;
+    for (int row = 0; row < CURSOR_HEIGHT; row++) {
+        for (int col = 0; col < CURSOR_WIDTH; col++) {
+            set_pixel(x + col, y + row, original_pixels[index++]);
+        }
+    }
+}
+
 void cursor_draw() {
     // erase cursor
-    set_pixel(prev_mouse_x, prev_mouse_y, prev_colour);
-    set_pixel(prev_mouse_x+1, prev_mouse_y+1, prev_colour2);
-    set_pixel(prev_mouse_x+2, prev_mouse_y+2, prev_colour3);
+    restore_original_pixels(prev_mouse_x, prev_mouse_y);
 
     // set the colour to our mouse pos
-    prev_colour = read_pixel(mouse_x, mouse_y);
-    prev_colour2 = read_pixel(mouse_x+1, mouse_y+1);
-    prev_colour3 = read_pixel(mouse_x+2, mouse_y+2);
+    store_original_pixels(mouse_x, mouse_y);
+
     // draw cursor
-    set_pixel(mouse_x, mouse_y, white);
-    set_pixel(mouse_x+1, mouse_y+1, white);
-    set_pixel(mouse_x+2, mouse_y+2, white);
+
+    // clicks
+    uint32_t cursor_colour;
+    if (left_pressed) {
+        cursor_colour = yellow;
+    } else
+    if (right_pressed) {
+        cursor_colour = cyan;
+    } else
+    if (middle_pressed) {
+        cursor_colour = magenta;
+    } else{
+        cursor_colour = white;
+    }
+    draw_bitmap(row1, mouse_x, mouse_y, cursor_colour);
+    draw_bitmap(row2, mouse_x, mouse_y+1, cursor_colour);
+    draw_bitmap(row3, mouse_x, mouse_y+2, cursor_colour);
+    draw_bitmap(row4, mouse_x, mouse_y+3, cursor_colour);
+    draw_bitmap(row5, mouse_x, mouse_y+4, cursor_colour);
+    draw_bitmap(row6, mouse_x, mouse_y+5, cursor_colour);
+    draw_bitmap(row7, mouse_x, mouse_y+6, cursor_colour);
+    draw_bitmap(row8, mouse_x, mouse_y+7, cursor_colour);
+    draw_bitmap(row9, mouse_x, mouse_y+8, cursor_colour);
+    draw_bitmap(row10, mouse_x, mouse_y+9, cursor_colour);
+
 
     // trickery
     prev_mouse_x = mouse_x;
     prev_mouse_y = mouse_y;
-
-    // clicks
-    if (left_pressed) {
-        
-    }
-    if (right_pressed) {
-        
-    }
-    if (middle_pressed) {
-        
-    }
 }
 
 

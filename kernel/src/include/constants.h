@@ -12,4 +12,6 @@
 #define nice_orange 0xfac69d
 #define nice_red 0xd73e1f
 #define nice_red 0xd73e1f
-#define os_release "1.0"
+#define os_release "2.0"
+#define CURSOR_WIDTH 10
+#define CURSOR_HEIGHT 10

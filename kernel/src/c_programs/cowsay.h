@@ -13,4 +13,9 @@ void random();
 void math();
 void diskr();
 void diskw();
+void ls();
+void touch();
+void write();
+void mkdir();
+void read();
 #endif

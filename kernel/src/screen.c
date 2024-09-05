@@ -6,6 +6,9 @@
 #include <include/constants.h>
 //#include "main.c"
 
+extern int cursor_pos_y;
+extern int cursor_pos_x;
+
 // FRABEBUFFER ADDRESS
 volatile uint32_t* fb_addr;
 void set_pixel(int x, int y, uint32_t color) {
@@ -40,27 +43,24 @@ void print_char_at(char c, int x, int y, uint32_t color) {
 }
 void scroll_pixel_line() {
     /*
-        The idea: start by 1st line, clear it, save the next line (start of real iteration)
-        then set previous line to this saved line. EZ enough.
+        The idea: start by the 8th line, clear the first 1 lines, save the next 8 lines (start of real iteration)
+        then set previous 1 lines to these saved lines. EZ enough.
         RIPPED FROM AbdooOS 64 bit By AbdooOwd
     */
     for (size_t line = 0; line < 800; line++) {
         for (size_t pixel = 0; pixel < 1280; pixel++) {
-
-            if (line == 0) {
-                // clear first line
+            if (line < 8) { 
                 set_pixel(pixel, line, black);
                 continue;
             }
-
-            // empty last line
-            //if (line + 1 >= 800) {
-                //set_pixel(pixel, line, black);
-              //  continue;
-            //}
-
-            set_pixel(pixel, line - 1, fb_addr[get_offset(pixel, line)]);
+            set_pixel(pixel, line - 8, fb_addr[get_offset(pixel, line)]);
         }
     }
+
+    for (size_t line = 792; line < 800; line++) {
+        for (size_t pixel = 0; pixel < 1280; pixel++) {
+            set_pixel(pixel, line, black);
+        }
+    }
+    cursor_pos_y--;
 }
-    

@@ -10,6 +10,7 @@
 #include <a_tools/timer.h>
 #include <drivers/disk/ata.h>
 #include <a_tools/random.h>
+#include <drivers/disk/fat.h>
 
 // FILE CONTAINS BOTH THE COWSAY BY Tony Monroe (https://github.com/tnalpgge/rank-amateur-cowsay)
 // PORTED BY theoriginalgrasshopper
@@ -25,6 +26,7 @@ char characters_before_argsym[MAX_ARGUMENT_LENGTH];
 char characters_after_argsym[MAX_ARGUMENT_LENGTH];
 char characters_after_argsym_second[MAX_ARGUMENT_LENGTH];
 char characters_after_argsym_third[MAX_ARGUMENT_LENGTH];
+char characters_after_argsym_fourth[MAX_ARGUMENT_LENGTH];
 char arguments[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
 int argument_count = 0;
 bool in_quotes = false;
@@ -33,7 +35,6 @@ bool in_quotes = false;
 void commands_with_argument_init(char string_to_say[]) {
     int i = 0;
     int char_index_before = 0;
-    bool found_first_word = false;
 
     for (int j = 0; j < MAX_ARGUMENTS; j++) {
         for (int k = 0; k < MAX_ARGUMENT_LENGTH; k++) {
@@ -107,6 +108,15 @@ void commands_with_argument_init(char string_to_say[]) {
             j++;
         }
         characters_after_argsym_third[j] = '\0';
+    }
+    // FOUR
+    if (argument_count > 3) {
+        int j = 0;
+        while (arguments[3][j] != '\0') {
+            characters_after_argsym_fourth[j] = arguments[3][j];
+            j++;
+        }
+        characters_after_argsym_fourth[j] = '\0';
     }
 }   // CAN ADD MORE BUT DONT NEED FOR NOW
 
@@ -203,10 +213,10 @@ void math(){
 }
 void sprint_raw(uint8_t* data, int length, int color) {
     for (int i = 0; i < length; i++) {
-        char text[2] = { data[i], '\0' }; // Ensure only one character is printed
+        char text[2] = { data[i], '\0' }; 
         sprint(text, color);
     }
-    sprint("\n", white); // Add a newline at the end
+    sprint("\n", white); 
 }
 void diskr(){
     if (string_same(characters_before_argsym, "diskr")){
@@ -230,5 +240,56 @@ void diskw(){
             int count = string_to_int(characters_after_argsym_second);
             ATA_Write28_PM(sector, (uint8_t*)characters_after_argsym_third, count);
         }
+    }
+}
+
+void ls(){
+    if (string_same(characters_before_argsym, "ls")){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
+        read_dir(formatted_path);
+    }
+}
+void read(){
+    if (string_same(characters_before_argsym, "read") || (string_same(characters_before_argsym, "cat"))){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
+
+        formatted_path[strlen(formatted_path)-3] = characters_after_argsym_second[0];
+        formatted_path[strlen(formatted_path)-2] = characters_after_argsym_second[1];
+        formatted_path[strlen(formatted_path)-1] = characters_after_argsym_second[2];
+        
+        readfile(formatted_path);
+    }
+}
+
+void touch(){
+    if (string_same(characters_before_argsym, "touch")){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
+        createfile(formatted_path, characters_after_argsym_second);
+    }
+}
+
+
+
+void mkdir(){
+    if (string_same(characters_before_argsym, "mkdir")){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
+        createdir(formatted_path);
+    }
+}
+void write(){
+    if (string_same(characters_before_argsym, "write")){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
+
+        formatted_path[strlen(formatted_path)-3] = characters_after_argsym_second[0];
+        formatted_path[strlen(formatted_path)-2] = characters_after_argsym_second[1];
+        formatted_path[strlen(formatted_path)-1] = characters_after_argsym_second[2];
+
+        sprint(characters_after_argsym_fourth, white);
+        overwrite(formatted_path, characters_after_argsym_third, string_to_int(characters_after_argsym_fourth));
     }
 }

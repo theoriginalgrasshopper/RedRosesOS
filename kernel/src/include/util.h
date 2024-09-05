@@ -2,9 +2,9 @@
 #define UTIL_H
 #pragma once
 
-#include <include/types.h>
 #include <a_tools/timer.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #define PAGE_SIZE 4096
 

@@ -19,8 +19,8 @@ all: $(IMAGE_NAME).iso
 .PHONY: all-hdd
 all-hdd: $(IMAGE_NAME).hdd
 
-.PHONY: run
-run: $(IMAGE_NAME).iso
+.PHONY: run-iso
+run-iso: $(IMAGE_NAME).iso
 	qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0
 
 .PHONY: run-uefi
@@ -83,18 +83,24 @@ $(IMAGE_NAME).hdd: limine/limine kernel
 
 $(IMAGE_NAME).img: limine/limine kernel
 	rm -f $(IMAGE_NAME).img
-	dd if=/dev/zero bs=1M count=0 seek=64 of=$(IMAGE_NAME).img
+	dd if=/dev/zero bs=1M count=0 seek=128 of=$(IMAGE_NAME).img
 	parted -s $(IMAGE_NAME).img mklabel msdos
 	parted -s $(IMAGE_NAME).img mkpart primary fat32 1M 100%
 	parted -s $(IMAGE_NAME).img set 1 boot on
 	./limine/limine bios-install $(IMAGE_NAME).img
-	mformat -i $(IMAGE_NAME).img@@1M 
+	mformat -i $(IMAGE_NAME).img@@1M -F
 	mmd -i $(IMAGE_NAME).img@@1M ::/EFI ::/EFI/BOOT ::/boot ::/boot/limine
 	mcopy -i $(IMAGE_NAME).img@@1M kernel/bin/kernel ::/boot
 	mcopy -i $(IMAGE_NAME).img@@1M bg.jpg ::/boot
 	mcopy -i $(IMAGE_NAME).img@@1M limine.cfg limine/limine-bios.sys ::/boot/limine
 	mcopy -i $(IMAGE_NAME).img@@1M limine/BOOTX64.EFI ::/EFI/BOOT
 	mcopy -i $(IMAGE_NAME).img@@1M limine/BOOTIA32.EFI ::/EFI/BOOT
+	mmd -i $(IMAGE_NAME).img@@1M ::/ROS_ICOS
+	mmd -i $(IMAGE_NAME).img@@1M ::/DOCS
+	mmd -i $(IMAGE_NAME).img@@1M ::/PICTURES
+	mcopy -i $(IMAGE_NAME).img@@1M ICONS/MOS_ICO.RSI ::/ROS_ICOS
+	mcopy -i $(IMAGE_NAME).img@@1M ICONS/ROSFETC.RAS ::/ROS_ICOS
+
 
 .PHONY: clean
 clean:

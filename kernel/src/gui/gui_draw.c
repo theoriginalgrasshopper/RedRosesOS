@@ -5,6 +5,7 @@
 #include <include/constants.h>
 #include <stdint.h>
 #include "mode.h"
+#include <drivers/mouse.h>
 #include "gui_draw.h"
 
 extern int mode;

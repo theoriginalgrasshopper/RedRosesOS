@@ -20,6 +20,11 @@
 #include <drivers/mouse.h>
 #include <gui/mode.h>
 #include <drivers/disk/ata.h>
+#include <drivers/disk/fat.h>
+#include <drivers/disk/mbr.h>
+#include <memory_management/pmm.h>
+#include <include/constants.h>
+
 //#include "screen.c"
 // Set the base revision to 2, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -42,11 +47,6 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 // Finally, define the start and end markers for the Limine requests.
 // These can also be moved anywhere, to any .c file, as seen fit.
 
-__attribute__((used, section(".requests_start_marker")))
-static volatile LIMINE_REQUESTS_START_MARKER;
-
-__attribute__((used, section(".requests_end_marker")))
-static volatile LIMINE_REQUESTS_END_MARKER;
 
 // GCC and Clang reserve the right to generate calls to the following
 // 4 functions even if they are not directly called.
@@ -143,9 +143,12 @@ void _start(void) {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    //  -------------- ACTUAL KERNEL START, (BESIDES THE LINE DRAWIN SHUT UP )------------------------
+    //  -------------- ACTUAL KERNEL START, (BESIDES THE LINE DRAWING SHUT UP )-----------------------
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
  //   static void hang_and_set_interrupt_flag(void) {
    // asm ("cli");
     //for (;;) {
@@ -167,33 +170,37 @@ void _start(void) {
    // print_char_at('S', 2, 0, 0xFFFFFFFF);
   //  print_char_at('!', 3, 0, 0xFFFFFFFF);
   //  sprint("Hello, World!", 0xFFFFFFFF);
-    sprint("RedRosesOS 0.0.6 \n", white);
+    sprint("booting RedRosesOS: ", white);
+    sprint(os_release, nice_red);
+    sprint("\n", white);
     sprint("like this \n", 0xFFFFFF);
     sprint("colour too \n", 0x123123);
     sprint("pretty pink \n\n\n", 0xe81e8d);
     __asm__ ("sti");
+    
     GDT_init();
     IDT_init();
+    
     keyboard_init();
     IDT_init();
     keyboard_init();
     IDT_init();
     keyboard_init();
+    keyboard_init();
+
+    ATA_ALL_INIT();
+    pmm_init();
     mouse_init();
-    keyboard_init();
-
-    // DRIVE
-
-
-    clear_screen();
+    
+    //clear_screen();
     cursor_pos_y = 0;
     main_menu();
     initTimer();
     playSoundTimed(880, 2);
     extern int mode;
     mode = 1;
-    clear_and_print();
-    ATA_ALL_INIT();
+    //clear_and_print();
+    
     //clear_screen();
    // sprint("clear screen works ! \n", 0xffffff);
     //sprint("what the fuck", 0x123123);

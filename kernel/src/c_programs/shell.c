@@ -19,6 +19,9 @@
 #include <gui/gui_draw.h>
 #include <gui/mode.h>
 #include <drivers/disk/mbr.h>
+#include <drivers/disk/fat.h>
+#include <interrupts/io.h>
+#include <drivers/keyboard.h>
 
         // ALL THE COMMANDS
 extern int mode;
@@ -59,16 +62,15 @@ void command_init(){
     if ( string_same(input_buffer, "sound-stop") ){
         stopSound();
     }
-    if ( string_same(input_buffer, "pmm-init") ){
-       sprint("PMM DOES NOT WORK. YOU NOW NEED TO RESTART THE MACHINE.\n\n", magenta);
-       pmm_init();
-       //pmm_alloc(2);
-    }
     if ( string_same(input_buffer, "scroll") ){
         scroll_pixel_line();
     }
     if ( string_same(input_buffer, "mbr-read") ){
         read_mbr();
+    }
+    if ( string_same(input_buffer, "ls-root") ){
+        Read_BPB_quiet(0);
+        Read_root_dir();
     }
     if ( string_same(input_buffer, "cat") ){
         draw_rle_image(rle_image, rle_image_size, cursor_pos_x, cursor_pos_y);
@@ -84,8 +86,7 @@ void command_init(){
         sprint("about            | shows information about RedRosesOS \n", white);
         sprint("help             | shows this message \n", white);
         sprint("qemu-shutdown    | shuts down QEMU ver. 2.0 and newer \n", white);
-        sprint("reboot           | reboots the system \n", white);
-        sprint("pmm-init         | does not work \n\n", white);
+        sprint("reboot           | reboots the system \n\n", white);
         sprint("VISUAL \n\n", green);
         sprint("start-menu       | shows start menu \n", white);
         sprint("pixel            | accepts three arguments, draws a specified pixel at specified coordinates \n\n", white);
@@ -93,6 +94,17 @@ void command_init(){
         sprint("sound-play       | accepts one argument, plays a tone in specified frequency \n", white);
         sprint("sound-play-timed | accepts two arguments, plays a tone in specified frequency for a specified amount of ticks. 87 ticks is equal to a second \n", white);
         sprint("sound-stop       | stops the sound of the PC speaker \n\n", white);
+        sprint("DISK & FS\n\n", green);
+        sprint("diskw            | accepts three arguments, writes to the specified sector. The data written is provided by the user, as well as the amount of bytes to write \n", white);
+        sprint("diskr            | accepts two arguments, reads the specified amount of bytes from the specified sector\n", white);    
+        sprint("ls               | accepts one argument, lists the contents of the specified directory. '/' is considered both a separator and the root directory\n", white);
+        sprint("ls-root          | alias for 'ls /' \n", white);
+        sprint("read             | accepts two arguments, reads a file from the specified path with the specified extension \n", white);
+        sprint("cat              | alias for 'read' \n", white);
+        sprint("mkdir            | accepts one argument, creates a directory in the specified path \n", white);
+        sprint("touch            | accepts two arguments, creates a file in the specified path with the specified extension  \n", white);
+        sprint("write            | accepts four arguments: filepath, extension, data and amount of bytes to write. Writes to a file\n", white);
+        sprint("mbr-read         | provides information about the MBR \n\n", white);
         sprint("MISC \n\n", green);
         sprint("explode          | originally made and implemented by pac-ac in osakaOS, flashes colours rapidly and produces a loud screech \n", white);
         sprint("cowsay           | accepts one argument, originally made by Tony Monroe, displays a cow saying a specified message \n", white);
@@ -100,7 +112,7 @@ void command_init(){
         sprint("math             | accepts 3 arguments, allows for simple operations with integers\n", white);
         sprint("rosefetch        | displays general information about the system \n", white);
         sprint("random           | accepts two arguments, prints out a pseudo-random value in specified range\n", white);
-        sprint("cat              | cat\n", white);
+        sprint("cat              | cat\n\n", white);
     }
 
     
@@ -118,6 +130,11 @@ void command_init(){
     math();
     diskr();
     diskw();
+    ls();
+    read();
+    touch();
+    write();
+    mkdir();
 
     // SHELL CHARACTER
     if(mode == 1)sprint_char('#', red);

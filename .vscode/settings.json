@@ -7,6 +7,18 @@
         "draw_image.h": "c",
         "stdint.h": "c",
         "keyboard.h": "c",
-        "io.h": "c"
+        "io.h": "c",
+        "stdarg.h": "c",
+        "stdbool.h": "c",
+        "fat.h": "c",
+        "stddef.h": "c",
+        "ata.h": "c",
+        "ctype.h": "c",
+        "font.h": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "random.h": "c",
+        "convert_to_int.h": "c"
     }
 }
