@@ -83,7 +83,7 @@ $(IMAGE_NAME).hdd: limine/limine kernel
 
 $(IMAGE_NAME).img: limine/limine kernel
 	rm -f $(IMAGE_NAME).img
-	dd if=/dev/zero bs=1M count=0 seek=128 of=$(IMAGE_NAME).img
+	dd if=/dev/zero bs=1M count=0 seek=99 of=$(IMAGE_NAME).img
 	parted -s $(IMAGE_NAME).img mklabel msdos
 	parted -s $(IMAGE_NAME).img mkpart primary fat32 1M 100%
 	parted -s $(IMAGE_NAME).img set 1 boot on
