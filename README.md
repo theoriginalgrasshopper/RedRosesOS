@@ -36,7 +36,7 @@ RedRosesOS supports the following commands:
 | `clear` | Clears the screen |
 | `about` | Shows information about RedRosesOS |
 | `help` | Displays a help message |
-| `qemu-shutdown` | Shuts down QEMU ver. 2.0 |
+| `qemu-shutdown` | Shuts down QEMU ver. 2.0 and newer |
 | `reboot` | Reboots the system |
 
 ### VISUAL
