@@ -140,4 +140,5 @@ Contributions to RedRosesOS are welcome! Please refer to the [Contributing Guide
 ---------
 
 For more detailed documentation, please refer to the [Wiki page](https://github.com/theoriginalgrasshopper/RedRosesOS/wiki) (coming soon).
+<br>
 The README's updated look was made possible by Gurov.
