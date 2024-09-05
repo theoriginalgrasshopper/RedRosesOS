@@ -113,7 +113,7 @@ make run-img
 
 ## Screenshots
 
-![RedRosesOS Showcase](https://github.com/theoriginalgrasshopper/RedRosesOS/blob/main/showcase.png?raw=true)
+![RedRosesOS Showcase](https://github.com/theoriginalgrasshopper/RedRosesOS/blob/main/showcaseh.png?raw=true)
 
 ## Roadmap
 
