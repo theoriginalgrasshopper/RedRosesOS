@@ -69,7 +69,7 @@ RedRosesOS supports the following commands:
 | `mkdir` | Creates a directory in the specidied path (accepts one argument) |
 | `touch` | Creates a file in the specified path with the specified extension (accepts two arguments) | 
 | `write` | Writes the specified data with the specified amount of bytes to the specified file with the specified extension (accepts four arguments) |
-| `mbr` | Provides information about the MBR
+| `mbr-read` | Provides information about the MBR
 
 ### MISC
 
