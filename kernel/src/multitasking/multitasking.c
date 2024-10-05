@@ -10,7 +10,7 @@ Task* task_list;     // first task in the list
 
 void taskA(){
     while(1){
-        fill_screen(blue);
+        fill_screen(green);
     }
 }
 void taskB(){
