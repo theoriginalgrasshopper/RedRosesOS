@@ -300,6 +300,9 @@ void Overwrite_File_path(uint32_t root_dir_sector, const char* filepath, const u
 
                     sprint("file written successfully\n", green);
                 }
+                
+                entry->file_size = data_size;
+                ATA_Write28_PM(sector + i, (uint8_t*)buffer, 512);
 
                 return;
             }
@@ -430,7 +433,103 @@ void Read_File_path(uint32_t root_dir_sector, const char* filepath) {
     sprint("\n", white);
 }
 
+uint32_t* Get_size(uint32_t root_dir_sector, const char* filepath) {
+    char components[16][12];
+    int component_count = 0;
+    split_path(filepath, components, &component_count);
 
+    if (component_count == 0) {
+        sprint("invalid file path\n", red);
+        return NULL;
+    }
+
+    uint32_t current_cluster = bpb->root_cluster;
+
+    for (int i = 0; i < component_count - 1; i++) {
+        bool found = false;
+        char buffer[512];
+        FAT32_DirectoryEntry* entry = NULL;
+        uint32_t sector = 2048 + (bpb->reserved_sector_count + (bpb->num_fats * bpb->fat_size_32)) + ((current_cluster - 2) * bpb->sectors_per_cluster);
+
+        for (int j = 0; j < bpb->sectors_per_cluster; j++) {
+            ATA_Read28_PM_INTO_BUFFER(sector + j, 512, buffer);
+            entry = (FAT32_DirectoryEntry*)buffer;
+
+            for (int k = 0; k < 16; k++) {
+                if (entry->name[0] == 0x00) {
+                    break;
+                }
+                if (entry->name[0] == 0xE5 || entry->attr == 0x0F) {
+                    entry++;
+                    continue;
+                }
+
+                char name[12];
+                memcpy(name, entry->name, 11);
+                name[11] = '\0';
+
+                if (string_same(name, components[i]) && (entry->attr & 0x10)) {
+                    current_cluster = entry->first_cluster_lo | (entry->first_cluster_hi << 16);
+                    found = true;
+                    break;
+                }
+                entry++;
+            }
+
+            if (found) break;
+        }
+
+        if (!found) {
+            sprint("directory not found: ", red);
+            sprint(components[i], red);
+            sprint("\n", white);
+            return NULL;
+        }
+    }
+
+    char buffer[512];
+    FAT32_DirectoryEntry* entry = NULL;
+    uint32_t sector = 2048 + (bpb->reserved_sector_count + (bpb->num_fats * bpb->fat_size_32)) + ((current_cluster - 2) * bpb->sectors_per_cluster);
+
+    for (int i = 0; i < bpb->sectors_per_cluster; i++) {
+        ATA_Read28_PM_INTO_BUFFER(sector + i, 512, buffer);
+        entry = (FAT32_DirectoryEntry*)buffer;
+
+        for (int j = 0; j < 16; j++) {
+            if (entry->name[0] == 0x00) {
+                sprint("file not found: ", red);
+                sprint(components[component_count - 1], red);
+                sprint("\n", white);
+                return NULL;
+            }
+            if (entry->name[0] == 0xE5 || entry->attr == 0x0F) {
+                entry++;
+                continue;
+            }
+
+            char name[12];
+            memcpy(name, entry->name, 11);
+            name[11] = '\0';
+
+            if (string_same(name, components[component_count - 1])) {
+                uint32_t cluster = entry->first_cluster_lo | (entry->first_cluster_hi << 16);
+                uint32_t file_size = entry->file_size;
+
+                if (file_size == 0) {
+                    sprint("the file was empty.\n", yellow);
+                    return NULL;
+                }
+
+                return file_size;
+            }
+            entry++;
+        }
+    }
+    sprint("file not found: ", red);
+    sprint(components[component_count - 1], red);
+    sprint("\n", white);
+    return NULL;
+}
 
 char* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath) {
     char components[16][12];
@@ -1065,6 +1164,12 @@ char* readfile_into_buffer(const char* filename){
     Read_BPB_quiet(0);
     Read_BPB_quiet(0);
     Read_File_path_INTO_BUFFER(root_dir_sector_public, filename);
+}
+uint32_t* get_file_size(const char* filename){
+    Read_BPB_quiet(0);
+    Read_BPB_quiet(0);
+    Read_BPB_quiet(0);
+    Get_size(root_dir_sector_public, filename);
 }
 
 void createfile(const char* filename2, const char* ext){

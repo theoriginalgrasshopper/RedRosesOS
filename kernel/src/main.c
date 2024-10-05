@@ -24,6 +24,9 @@
 #include <drivers/disk/mbr.h>
 #include <memory_management/pmm.h>
 #include <include/constants.h>
+#include <a_tools/clock.h>
+#include <a_tools/convert_to_int.h>
+#include <multitasking/multitasking.h>
 
 //#include "screen.c"
 // Set the base revision to 2, this is recommended as this is the latest
@@ -105,7 +108,6 @@ int memcmp(const void *s1, const void *s2, size_t n) {
     return 0;
 }
 
-// Halt and catch fire function.
 static void hcf(void) {
     asm ("cli");
     for (;;) {
@@ -113,9 +115,6 @@ static void hcf(void) {
     }
 }
 
-// The following will be our kernel's entry point.
-// If renaming _start() to something else, make sure to change the
-// linker script accordingly.
 void _start(void) {
     // Ensure the bootloader actually understands our base revision (see spec).
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
@@ -130,16 +129,6 @@ void _start(void) {
 
     // Fetch the first framebuffer.
     struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
-
-    // Note: we assume the framebuffer model is RGB with 32-bit pixels.
-    //for (size_t i = 0; i < 100; i++) {
-    //   volatile uint32_t *fb_ptr = framebuffer->address;
-  //      fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xff0000;
-//    }
-
-
-
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,6 +159,7 @@ void _start(void) {
    // print_char_at('S', 2, 0, 0xFFFFFFFF);
   //  print_char_at('!', 3, 0, 0xFFFFFFFF);
   //  sprint("Hello, World!", 0xFFFFFFFF);
+
     sprint("booting RedRosesOS: ", white);
     sprint(os_release, nice_red);
     sprint("\n", white);
@@ -179,28 +169,41 @@ void _start(void) {
     __asm__ ("sti");
     
     GDT_init();
+    pmm_init();
     IDT_init();
+
+    setup_multitasking();    
+    initTimer();
     
-    keyboard_init();
-    IDT_init();
-    keyboard_init();
-    IDT_init();
-    keyboard_init();
     keyboard_init();
 
     ATA_ALL_INIT();
-    pmm_init();
-    mouse_init();
-    
-    //clear_screen();
+
+    mouse_init();    
+
     cursor_pos_y = 0;
-    main_menu();
-    initTimer();
+    //main_menu();
+    
+    cursor_pos_y = 0;
+    cursor_pos_x = 0;
+    char boot_hour = read_rtc;
+    if(boot_hour<='j' && boot_hour>=0){
+        sprint("good morning", nice_orange);
+    } else 
+    if(boot_hour<='p' && boot_hour>='j'){
+        sprint("good afternoon", nice_orange);
+    } else 
+    if(boot_hour<='u' && boot_hour>='p'){
+        sprint("good evening", nice_orange);
+    } else
+    if(boot_hour<='x' && boot_hour>='u'){
+        sprint("good night", nice_orange);
+    } 
+
     playSoundTimed(880, 2);
     extern int mode;
     mode = 1;
-    //clear_and_print();
-    
+
     //clear_screen();
    // sprint("clear screen works ! \n", 0xffffff);
     //sprint("what the fuck", 0x123123);

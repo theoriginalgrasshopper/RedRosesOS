@@ -17,7 +17,7 @@ typedef struct {
     int y;
 } Vector2;
 // Vector2 font_dimensions = {8, 8};
-void print_char_at(char c, int x, int y, uint32_t color);
+void print_char_at(unsigned char c, int x, int y, uint32_t color);
 void scroll_pixel_line();
 uint32_t read_pixel(int x, int y);
 #endif

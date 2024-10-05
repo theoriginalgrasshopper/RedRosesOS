@@ -35,6 +35,10 @@ run-hdd: $(IMAGE_NAME).hdd
 run-img: $(IMAGE_NAME).img
 	qemu-system-x86_64 -M pc -m 2G -drive file=RedRosesOS.img,format=raw -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio
 
+.PHONY: run-debug
+run-debug: $(IMAGE_NAME).img
+	qemu-system-x86_64 -M pc -m 2G -drive file=RedRosesOS.img,format=raw -s -S -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio & gdb kernel/bin/kernel
+
 .PHONY: run-hdd-uefi
 run-hdd-uefi: ovmf $(IMAGE_NAME).hdd
 	qemu-system-x86_64 -M q35 -m 2G -bios ovmf/OVMF.fd -hda $(IMAGE_NAME).hdd
@@ -96,11 +100,12 @@ $(IMAGE_NAME).img: limine/limine kernel
 	mcopy -i $(IMAGE_NAME).img@@1M limine/BOOTX64.EFI ::/EFI/BOOT
 	mcopy -i $(IMAGE_NAME).img@@1M limine/BOOTIA32.EFI ::/EFI/BOOT
 	mmd -i $(IMAGE_NAME).img@@1M ::/ROS_ICOS
+	mmd -i $(IMAGE_NAME).img@@1M ::/APPS
 	mmd -i $(IMAGE_NAME).img@@1M ::/DOCS
 	mmd -i $(IMAGE_NAME).img@@1M ::/PICTURES
 	mcopy -i $(IMAGE_NAME).img@@1M ICONS/MOS_ICO.RSI ::/ROS_ICOS
 	mcopy -i $(IMAGE_NAME).img@@1M ICONS/ROSFETC.RAS ::/ROS_ICOS
-
+	mcopy -i $(IMAGE_NAME).img@@1M Software_Write/* ::/APPS
 
 .PHONY: clean
 clean:

@@ -13,7 +13,16 @@
 #include <c_programs/cmd_cursor.h>
 #include <c_programs/clear_and_print.h>
 #include <gui/mode.h>
+
 // SHELL JUNK. MOVE TO SHELL.C IN THE FUTURE
+
+char lower_char(char character) {  
+    if (character >= 'A' && character <= 'Z') { 
+        character += 32; 
+    }
+    return character;  
+} 
+
 void str_copy(char *source, char *destination) {
     while (*source != '\0') {
         *destination = *source;
@@ -183,10 +192,11 @@ InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
                 if (start_menu_active == true){
                     clear_and_print();
                     start_menu_active = false;
-                    sprint_char('#', red);
+                    sprint_char(TTY_CHAR, red);
                 }
-                if (caps_pressed == true) c = caps_char(c); 
+                if (caps_pressed == true) c = caps_char(c);
                 if (shift_pressed) c = caps_char(c);
+                if (shift_pressed != true && caps_pressed != true) c = lower_char(c); 
                 // hardcoding !@#$%^&*()_+ because yes
                 // https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html <------ useful website
                 if (shift_pressed && c == 49) c = 33; // !, 1

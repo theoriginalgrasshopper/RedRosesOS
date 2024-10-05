@@ -56,7 +56,6 @@ typedef struct {
 
 void IDT_init(void);
 void IDT_setGate(int i, uint64_t handler, uint16_t flags);
-void IDT_initGates();
 void IDT_load(void);
 
 #endif

@@ -13,5 +13,5 @@ extern int mode;
 void gui_init(){
     mode = 2;
     fill_screen(0x614a39);
-    draw_rectangle(red, Y_TOP, X_LEFT, 30, 1280);
+    draw_rectangle(red, Y_TOP, X_LEFT, 30, SCREEN_WIDTH);
 }

@@ -6,6 +6,8 @@
 #include <include/util.h>
 #include <interrupts/cpu.h>
 #include <include/constants.h>
+#include <a_tools/convert_to_int.h>
+
 // RIPPED FROM ABDOOOS BY ABDOOOWD
 /**
  * The idea:
@@ -137,6 +139,74 @@ void pmm_init() {
         free_i++;
 	}
     sprint("SUCCESS", green);
+}
+void* PmmRequestPages(size_t num_pages) {
+    size_t pages_needed = num_pages;  // number of pages requested
+    bool found_space = false;
+    size_t continued_free_bits = 0;
+
+    bitmap_offset_t bitmap_offsets = {
+        .bit_offset = 0,
+        .entry_index = 0,
+        .u64_index = 0
+    };
+    bool found_start = false;
+
+    uint64_t cur_uint64_t = (uint64_t) bitmap; // base of current uint64_t in the bitmap
+
+    for (size_t i = 0; i < free_entry_count; i++) {
+        if (found_space) break;
+
+        for (size_t uint64_t_i = 0; uint64_t_i < bitmap_sizes[i] / sizeof(uint64_t); uint64_t_i++) {
+            for (size_t b = 0; b < sizeof(uint64_t) * 8; b++) {
+                if (continued_free_bits >= pages_needed) {
+                    found_space = true;
+                    break;
+                }
+                
+                if (!TEST_BIT(*((uint64_t*) cur_uint64_t), b)) {
+                    if (!found_start) {
+                        bitmap_offsets.u64_index = uint64_t_i;
+                        bitmap_offsets.bit_offset = b;
+                        bitmap_offsets.entry_index = i;
+                        found_start = true;
+                    }
+                    continued_free_bits++;
+                } else {
+                    continued_free_bits = 0;
+                    found_start = false;
+                }
+            }
+        }
+    }
+
+    if (found_start && found_space) {
+        void* ptr;
+        uint64_t ptr_base = 0;
+
+        for (size_t b = 0; b < pages_needed; b++) {
+            SET_BIT(*((uint64_t*) cur_uint64_t), b + bitmap_offsets.bit_offset);
+        }
+
+        size_t free_i = 0;
+        for (size_t i = 0; i < memmap->entry_count; i++) {
+            struct limine_memmap_entry* entry = memmap->entries[i];
+
+            if (entry->type != LIMINE_MEMMAP_USABLE)
+                continue;
+
+            if (free_i == bitmap_offsets.entry_index) {
+                ptr_base = entry->base;
+                break;
+            }
+            free_i++;
+        }
+
+        ptr = (void*) (ptr_base + (uint64_t) (((bitmap_offsets.u64_index * 8) + bitmap_offsets.bit_offset) * PAGE_SIZE) + get_hhdm());
+        return ptr;
+    } else {
+        return NULL; // return NULL if no pages are found
+    }
 }
 
 void* pmm_alloc(size_t size) {
@@ -438,9 +508,47 @@ void pmm_free(void* ptr, size_t size) {
     sprint("\n[PMM] Freed pages at address \n", white);
 }
 
-void pmm_free_auto(){
-// insert code here...
+void pmm_free_auto() {
+    size_t pages_freed = 0;
+    bool found_allocated_space = false;
+
+    // iterate over each entry in the memory map.
+    for (size_t i = 0; i < free_entry_count; i++) {
+        uint64_t cur_uint64_t = (uint64_t) bitmap;
+
+        // adjust to the start of the current entry's bitmap.
+        for (size_t j = 0; j != i; j++)
+            cur_uint64_t += bitmap_sizes[j];
+
+        // iterate over each 64 bit chunk in the bitmap for the current entry.
+        for (size_t uint64_t_i = 0; uint64_t_i < bitmap_sizes[i] / sizeof(uint64_t); uint64_t_i++) {
+            for (size_t pp = 0; pp < uint64_t_i; pp++)
+                cur_uint64_t += sizeof(uint64_t);
+
+            // iterate through each bit to find allocated pages.
+            for (size_t b = 0; b < sizeof(uint64_t) * 8; b++) {
+                // if the bit is 1, it means the page is allocated.
+                if (TEST_BIT(*((uint64_t*) cur_uint64_t), b)) {
+                    found_allocated_space = true;
+                    CLEAR_BIT(*((uint64_t*) cur_uint64_t), b);
+                    pages_freed++;
+                }
+            }
+        }
+    }
+
+    if (found_allocated_space) {
+        sprint("\n[PMM] successfully freed ", white);
+        char amount_freed[256];
+        int_to_str(pages_freed, amount_freed);
+        sprint(amount_freed, white);
+        sprint("\n", white);
+
+    } else {
+        sprint("[PMM] no allocated memory found to free\n", red);
+    }
 }
+
 
 uint64_t get_hhdm() {
 	return hhdm->offset;

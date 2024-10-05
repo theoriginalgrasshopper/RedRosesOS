@@ -12,20 +12,20 @@ extern int cursor_pos_x;
 // FRABEBUFFER ADDRESS
 volatile uint32_t* fb_addr;
 void set_pixel(int x, int y, uint32_t color) {
-    if ((x >= 0 && (uint64_t) x < 1280) && (y >= 0 && (uint64_t) y < 800))
+    if ((x >= 0 && (uint64_t) x < SCREEN_WIDTH) && (y >= 0 && (uint64_t) y < SCREEN_HEIGHT))
         fb_addr[get_offset(x, y)] = color;
     }
 
 uint32_t read_pixel(int x, int y) {
-    if ((x >= 0 && (uint64_t) x < 1280) && (y >= 0 && (uint64_t) y < 800))
+    if ((x >= 0 && (uint64_t) x < SCREEN_WIDTH) && (y >= 0 && (uint64_t) y < SCREEN_HEIGHT))
         return fb_addr[get_offset(x, y)];
     }
 
 uint32_t get_offset(int x, int y) {
-    return y * 1280 + x;
+    return y * SCREEN_WIDTH + x;
     }
 
-void print_char_at(char c, int x, int y, uint32_t color) {
+void print_char_at(unsigned char c, int x, int y, uint32_t color) {
     if (c != '\n') {
         for (size_t yy = 0; yy < 8; yy++) {
             for (size_t xx = 0; xx < 8; xx++) {
@@ -38,7 +38,6 @@ void print_char_at(char c, int x, int y, uint32_t color) {
                     set_pixel(x * 8 + xx, y * 8 + yy, black);
             }
         }
-
     }
 }
 void scroll_pixel_line() {
@@ -47,8 +46,8 @@ void scroll_pixel_line() {
         then set previous 1 lines to these saved lines. EZ enough.
         RIPPED FROM AbdooOS 64 bit By AbdooOwd
     */
-    for (size_t line = 0; line < 800; line++) {
-        for (size_t pixel = 0; pixel < 1280; pixel++) {
+    for (size_t line = 0; line < SCREEN_HEIGHT; line++) {
+        for (size_t pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
             if (line < 8) { 
                 set_pixel(pixel, line, black);
                 continue;
@@ -57,8 +56,8 @@ void scroll_pixel_line() {
         }
     }
 
-    for (size_t line = 792; line < 800; line++) {
-        for (size_t pixel = 0; pixel < 1280; pixel++) {
+    for (size_t line = 792; line < SCREEN_HEIGHT; line++) {
+        for (size_t pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
             set_pixel(pixel, line, black);
         }
     }

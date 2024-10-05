@@ -1,0 +1,3 @@
+say hello 4;
+pixel 20 20 0xffffff;
+touch /hi TXT;

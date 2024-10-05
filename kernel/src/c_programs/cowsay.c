@@ -11,6 +11,9 @@
 #include <drivers/disk/ata.h>
 #include <a_tools/random.h>
 #include <drivers/disk/fat.h>
+#include <software/petals.h>
+#include <software/binary.h>
+#include <a_tools/clock.h>
 
 // FILE CONTAINS BOTH THE COWSAY BY Tony Monroe (https://github.com/tnalpgge/rank-amateur-cowsay)
 // PORTED BY theoriginalgrasshopper
@@ -119,6 +122,15 @@ void commands_with_argument_init(char string_to_say[]) {
         characters_after_argsym_fourth[j] = '\0';
     }
 }   // CAN ADD MORE BUT DONT NEED FOR NOW
+
+void reset_arguments(){
+    memset(characters_after_argsym, 0, sizeof(characters_after_argsym));
+    memset(characters_after_argsym_second, 0, sizeof(characters_after_argsym_second));
+    memset(characters_after_argsym_third, 0, sizeof(characters_after_argsym_third));
+    memset(characters_after_argsym_fourth, 0, sizeof(characters_after_argsym_fourth));
+}
+
+
 
 
 // ACTUAL COWSAY
@@ -250,6 +262,7 @@ void ls(){
         read_dir(formatted_path);
     }
 }
+
 void read(){
     if (string_same(characters_before_argsym, "read") || (string_same(characters_before_argsym, "cat"))){
         char formatted_path[256];
@@ -262,7 +275,18 @@ void read(){
         readfile(formatted_path);
     }
 }
+void execute_bin(){
+    if (string_same(characters_before_argsym, "bin-execute")){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
 
+        formatted_path[strlen(formatted_path)-3] = characters_after_argsym_second[0];
+        formatted_path[strlen(formatted_path)-2] = characters_after_argsym_second[1];
+        formatted_path[strlen(formatted_path)-1] = characters_after_argsym_second[2];
+        
+        execute_flat_binary(formatted_path);
+    }
+}
 void touch(){
     if (string_same(characters_before_argsym, "touch")){
         char formatted_path[256];
@@ -280,6 +304,20 @@ void mkdir(){
         createdir(formatted_path);
     }
 }
+
+void execute(){
+    if (string_same(characters_before_argsym, "execute")){
+        char formatted_path[256];
+        convert_from_normal_to_fucking_insane(characters_after_argsym, formatted_path);
+
+        formatted_path[strlen(formatted_path)-3] = characters_after_argsym_second[0];
+        formatted_path[strlen(formatted_path)-2] = characters_after_argsym_second[1];
+        formatted_path[strlen(formatted_path)-1] = characters_after_argsym_second[2];
+
+        run_script(formatted_path);
+    }
+}
+
 void write(){
     if (string_same(characters_before_argsym, "write")){
         char formatted_path[256];

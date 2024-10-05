@@ -1,3 +1,4 @@
+#include <include/constants.h>
 int string_to_int(char* str) {
     int result = 0;
     int sign = 1; 
@@ -39,15 +40,6 @@ int string_to_int(char* str) {
     return result;
 }
 
-
-
-
-
-
-
-
-
-
 void int_to_str(int num, char *str) {
     int i = 0;
     int is_negative = 0;
@@ -85,4 +77,10 @@ void int_to_str(int num, char *str) {
     }
     
     str[i] = '\0';
+}
+
+void sprint_int(int theint){
+    char output[512];
+    int_to_str(theint, output);
+    sprint(output, white);
 }

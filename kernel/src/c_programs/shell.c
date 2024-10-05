@@ -22,14 +22,19 @@
 #include <drivers/disk/fat.h>
 #include <interrupts/io.h>
 #include <drivers/keyboard.h>
+#include <software/petals.h>
+#include <a_tools/clock.h>
 
-        // ALL THE COMMANDS
+// ALL THE COMMANDS
 extern int mode;
+extern bool exec_flag;
+
 void command_init(){
 
     // COMMANDS WITHOUT ARGUMENTS
-    
-    sprint("\n", white);
+    if (exec_flag != 1){
+        sprint("\n", white);
+    }
     if ( string_same(input_buffer, "rosefetch") ){
         rosefetch();
     }
@@ -74,6 +79,9 @@ void command_init(){
     }
     if ( string_same(input_buffer, "cat") ){
         draw_rle_image(rle_image, rle_image_size, cursor_pos_x, cursor_pos_y);
+    }
+    if ( string_same(input_buffer, "date") ){
+        read_rtc();
     }
     if ( string_same(input_buffer, "gui") ){
         stop_cmd_cursor();
@@ -135,9 +143,14 @@ void command_init(){
     touch();
     write();
     mkdir();
+    execute();
+    execute_bin();
 
     // SHELL CHARACTER
-    if(mode == 1)sprint_char('#', red);
+    if(mode == 1 && exec_flag != 1){
+        sprint_char(TTY_CHAR, red);
+    }
+    reset_arguments();
 }
 
 void shift_button_pressed(){

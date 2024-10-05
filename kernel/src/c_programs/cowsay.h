@@ -4,6 +4,7 @@
 extern char input_buffer[];
 
 void commands_with_argument_init( char string_to_say[] );
+void reset_arguments();
 void cowsay();
 void say_times_what();
 void sound();
@@ -17,5 +18,7 @@ void ls();
 void touch();
 void write();
 void mkdir();
+void execute();
 void read();
+void execute_bin();
 #endif

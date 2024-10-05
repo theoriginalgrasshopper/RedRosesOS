@@ -11,7 +11,16 @@
 #define black 0x000000
 #define nice_orange 0xfac69d
 #define nice_red 0xd73e1f
-#define nice_red 0xd73e1f
+
 #define os_release "2.0"
+
 #define CURSOR_WIDTH 10
 #define CURSOR_HEIGHT 10
+
+#define TTY_CHAR 0x0080 // lambda
+
+#define STACK_SIZE 4096
+
+#define SCREEN_HEIGHT 800
+#define SCREEN_WIDTH 1280
+

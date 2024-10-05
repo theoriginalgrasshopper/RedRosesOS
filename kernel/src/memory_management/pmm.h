@@ -24,7 +24,7 @@ void* pmm_alloc(size_t size);
 void* pmm_alloc_quiet(size_t size);
 void pmm_free(void* ptr, size_t size);
 void pmm_free_auto();
-
+void* PmmRequestPages(size_t num_pages);
 uint64_t get_hhdm();
 
 #endif

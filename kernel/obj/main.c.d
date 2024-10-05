@@ -4,7 +4,9 @@ obj/main.c.o: src/main.c src/limine.h src/screen.h src/sprint.h src/gdt.h \
  src/c_programs/clear_and_print.h src/a_tools/timer.h \
  src/interrupts/irq.h src/interrupts/idt.h src/c_programs/start_menu.h \
  src/memory_management/pmm.h src/drivers/mouse.h src/gui/mode.h \
- src/drivers/disk/ata.h src/drivers/disk/fat.h src/drivers/disk/mbr.h
+ src/drivers/disk/ata.h src/drivers/disk/fat.h src/drivers/disk/mbr.h \
+ src/a_tools/clock.h src/a_tools/convert_to_int.h \
+ src/multitasking/multitasking.h
 src/limine.h:
 src/screen.h:
 src/sprint.h:
@@ -26,3 +28,6 @@ src/gui/mode.h:
 src/drivers/disk/ata.h:
 src/drivers/disk/fat.h:
 src/drivers/disk/mbr.h:
+src/a_tools/clock.h:
+src/a_tools/convert_to_int.h:
+src/multitasking/multitasking.h:

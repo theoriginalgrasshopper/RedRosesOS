@@ -91,24 +91,22 @@ InterruptRegisters* mouse_handler(InterruptRegisters* regs) {
 
             // limit the thing
 
-            if (mouse_x >= 1280){
-                mouse_x = 1279;
+            if (mouse_x >= SCREEN_WIDTH){
+                mouse_x = SCREEN_WIDTH-1;
             }
             else if (mouse_x <= 0){
                 mouse_x = 1;
             }
 
-            if (mouse_y >= 800){
-                mouse_y = 799;
+            if (mouse_y >= SCREEN_HEIGHT){
+                mouse_y = SCREEN_HEIGHT-1;
             }
             else if (mouse_y <= 0){
                 mouse_y = 1;
             }
 
             // cursor
-
             cursor_draw();
-
             // mental overflow
 
             mouse_cycle = 0;
