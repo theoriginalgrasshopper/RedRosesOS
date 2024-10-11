@@ -283,7 +283,7 @@ void* pmm_alloc(size_t size) {
                 // sprint("[PMM] Bit: %i - uint64_t: %i - Free Entry: %i\n", b, uint64_t_i, i);
 
                 if (continued_free_bits >= pages_needed) {
-                    sprint("[PMM] Enough space has been found for allocation of %i pages\n", red);
+                    sprint("[PMM] Enough space has been found for allocation of %i pages\n", green);
                     found_space = true;
                     break;
                 }

@@ -13,6 +13,7 @@
 #include <c_programs/cmd_cursor.h>
 #include <c_programs/clear_and_print.h>
 #include <gui/mode.h>
+#include <multitasking/multitasking.h>
 
 // SHELL JUNK. MOVE TO SHELL.C IN THE FUTURE
 
@@ -118,8 +119,7 @@ extern int mode;
 
 // THE DRIVER PART WITH HANDLER
 InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
-	uint8_t scancode = inb(KBD_DATA_PORT);
-    
+	uint8_t scancode = inb(KBD_DATA_PORT);    
     // if we press unknown
     if (scancode > SC_MAX && !(scancode == LSHIFT || scancode == (LSHIFT | 0x80))) return regs;
 
@@ -228,10 +228,6 @@ InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
                     if(mode == 2){
                         append(input_buffer_graphic, c);
                     }
-                    // debug scancode 
-                   // char scancode_string[255];
-                   // int_to_str(scancode, scancode_string);
-                   // sprint(scancode_string, blue);
                 }
 
         }

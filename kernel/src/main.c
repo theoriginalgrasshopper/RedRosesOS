@@ -28,6 +28,7 @@
 #include <a_tools/convert_to_int.h>
 #include <multitasking/multitasking.h>
 
+extern void yield();
 //#include "screen.c"
 // Set the base revision to 2, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -136,49 +137,28 @@ void _start(void) {
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
- //   static void hang_and_set_interrupt_flag(void) {
-   // asm ("cli");
-    //for (;;) {
-      //  asm ("hlt");
-    //}
-    //}
-
-
-
-
     fb_addr = (volatile uint32_t*) framebuffer->address; // one line to make it work smh
-
-    // print char at:
-
-    // func ('character', horizontal(x), vertical(y), colour)
-
-   // print_char_at('Y', 0, 0, 0xFFFFFFFF);
-  //  print_char_at('E', 1, 0, 0xFFFFFFFF);
-   // print_char_at('S', 2, 0, 0xFFFFFFFF);
-  //  print_char_at('!', 3, 0, 0xFFFFFFFF);
-  //  sprint("Hello, World!", 0xFFFFFFFF);
 
     sprint("booting RedRosesOS: ", white);
     sprint(os_release, nice_red);
     sprint("\n", white);
+    
     sprint("like this \n", 0xFFFFFF);
     sprint("colour too \n", 0x123123);
     sprint("pretty pink \n\n\n", 0xe81e8d);
+    
     __asm__ ("sti");
     
     GDT_init();
     pmm_init();
     IDT_init();
 
-    setup_multitasking();    
+    multitasking_init();    
     initTimer();
+    test_multitasking();
     
     keyboard_init();
-
     ATA_ALL_INIT();
-
     mouse_init();    
 
     cursor_pos_y = 0;
@@ -203,9 +183,5 @@ void _start(void) {
     playSoundTimed(880, 2);
     extern int mode;
     mode = 1;
-
-    //clear_screen();
-   // sprint("clear screen works ! \n", 0xffffff);
-    //sprint("what the fuck", 0x123123);
     // We're done, just hang...
 }

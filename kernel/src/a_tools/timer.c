@@ -10,6 +10,7 @@
 #include <c_programs/cmd_cursor.h>
 #include <interrupts/io.h>
 #include <multitasking/multitasking.h>
+#include <memory_management/pmm.h>
 
 volatile uint64_t clock_ticks = 0;
 volatile uint64_t ticks = 0;
@@ -22,7 +23,6 @@ int global_sound_time;
 InterruptRegisters* onIrq0(InterruptRegisters* regs) {
     ticks += 1;
     clock_ticks++;
-    schedule(regs);
 
     if (sound_delay == true) {
         checkPlaySoundTimed();
@@ -40,7 +40,6 @@ InterruptRegisters* onIrq0(InterruptRegisters* regs) {
             }
         }
     }
-
     return regs;  
 }
 

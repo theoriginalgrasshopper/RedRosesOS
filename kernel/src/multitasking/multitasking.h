@@ -1,17 +1,18 @@
+#ifndef MULTITASKING_H
+#define MULTITASKING_H
+
 #include <stdint.h>
 #include <interrupts/idt.h>
 
 typedef struct {
-    uint64_t r15, r14, r13, r12, r11, r10, r9, r8;
-    uint64_t rsi, rdi, rbp, rbx, rdx, rcx, rax;
-    uint64_t rip, cs, rflags, rsp, ss;
-} CPUState;
+    uint64_t rax, rbx, rcx, rdx, rsi, rdi, rsp, rbp, rip, rflags, cr3;
+} __attribute__((packed)) CPUState;
 
 typedef struct Task {
     CPUState cpu_state;
-    int pid;
     struct Task* next;
 } Task;
-Task* create_task(void (*entry_point)(), int pid);
-void schedule(InterruptRegisters* regs);
-void setup_multitasking();
+void task_create(Task *task, void (*main)(), uint64_t rflags, uint64_t *cr3);
+void multitasking_init();
+void test_multitasking();
+#endif
