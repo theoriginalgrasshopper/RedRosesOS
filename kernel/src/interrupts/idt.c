@@ -27,7 +27,6 @@ void IDT_init(void) {
 
     PIC_init();
     IDT_load();
-	enableInterrupts(); // 'sti' instruction
 }
 
 void IDT_setGate(int i, uint64_t handler, uint16_t flags) {

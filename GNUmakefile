@@ -99,13 +99,16 @@ $(IMAGE_NAME).img: limine/limine kernel
 	mcopy -i $(IMAGE_NAME).img@@1M limine.cfg limine/limine-bios.sys ::/boot/limine
 	mcopy -i $(IMAGE_NAME).img@@1M limine/BOOTX64.EFI ::/EFI/BOOT
 	mcopy -i $(IMAGE_NAME).img@@1M limine/BOOTIA32.EFI ::/EFI/BOOT
-	mmd -i $(IMAGE_NAME).img@@1M ::/ROS_ICOS
+	
+	mmd -i $(IMAGE_NAME).img@@1M ::/REDROSES
+	mmd -i $(IMAGE_NAME).img@@1M ::/REDROSES/ICONS
 	mmd -i $(IMAGE_NAME).img@@1M ::/APPS
 	mmd -i $(IMAGE_NAME).img@@1M ::/DOCS
 	mmd -i $(IMAGE_NAME).img@@1M ::/PICTURES
-	mcopy -i $(IMAGE_NAME).img@@1M ICONS/MOS_ICO.RSI ::/ROS_ICOS
-	mcopy -i $(IMAGE_NAME).img@@1M ICONS/ROSFETC.RAS ::/ROS_ICOS
-	mcopy -i $(IMAGE_NAME).img@@1M Software_Write/* ::/APPS
+	
+	mcopy -i $(IMAGE_NAME).img@@1M external/icons/MOS_ICO.RSI ::/REDROSES/ICONS
+	mcopy -i $(IMAGE_NAME).img@@1M external/icons/ROSFETC.RAS ::/REDROSES/ICONS
+	mcopy -i $(IMAGE_NAME).img@@1M external/apps/* ::/APPS
 
 .PHONY: clean
 clean:

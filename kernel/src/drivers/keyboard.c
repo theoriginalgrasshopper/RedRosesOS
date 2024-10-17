@@ -85,10 +85,10 @@ void keyboard_init() {
     IRQ_installHandler(1, keyboard_handler);
 }
 
-// define keys
+// the data port for the PS/2 keyboard
 #define KBD_DATA_PORT 	0x60
-#define KBD_STATUS_PORT KBD_DATA_PORT + 4	// 0x64
 
+// define keys
 #define BACKSPACE 		0x0E
 #define ENTER 			0x1C
 #define LSHIFT 			0x2A
@@ -113,9 +113,7 @@ bool caps_pressed;
 extern int mode;
 
 // deprecated behaviour. Should be ceased as soon as possible
-
 #define SC_MAX 			80
-
 
 // THE DRIVER PART WITH HANDLER
 InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {

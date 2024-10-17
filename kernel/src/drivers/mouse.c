@@ -164,7 +164,7 @@ void mouse_wait(uint8_t type) {
 }
 
 char* split_to_bitmap(){
-    const char* cursor = readfile_into_buffer("/ROS_ICOS   /MOS_ICO RSI");
+    const char* cursor = readfile_into_buffer("/REDROSES   /ICONS      /MOS_ICO RSI");
     // if no file exists like that
     if(cursor == NULL){
         str_copy("MQMQMQMQMQ", row1);

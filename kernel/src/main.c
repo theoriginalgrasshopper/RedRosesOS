@@ -153,7 +153,7 @@ void _start(void) {
     pmm_init();
     IDT_init();
 
-    multitasking_init();    
+    multitasking_init(); //do not uncomment until the system works. I will try something drastic    
     initTimer();
     test_multitasking();
     
@@ -162,7 +162,7 @@ void _start(void) {
     mouse_init();    
 
     cursor_pos_y = 0;
-    //main_menu();
+    main_menu();
     
     cursor_pos_y = 0;
     cursor_pos_x = 0;
@@ -183,5 +183,4 @@ void _start(void) {
     playSoundTimed(880, 2);
     extern int mode;
     mode = 1;
-    // We're done, just hang...
 }
