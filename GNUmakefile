@@ -37,7 +37,7 @@ run-img: $(IMAGE_NAME).img
 
 .PHONY: run-debug
 run-debug: $(IMAGE_NAME).img
-	qemu-system-x86_64 -M pc -m 2G -drive file=RedRosesOS.img,format=raw -s -S -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio & gdb kernel/bin/kernel
+	qemu-system-x86_64 -M pc -m 2G -drive file=RedRosesOS.img,format=raw -s -S -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio & gdb kernel/bin/kernel 
 
 .PHONY: run-hdd-uefi
 run-hdd-uefi: ovmf $(IMAGE_NAME).hdd

@@ -46,10 +46,11 @@ void process_end(void) {
 void task_create(Task *task, void (*main)()) {
     uint64_t* task_stack = (uint64_t*)malloc(STACK_SIZE);
     CPUState *state = task_stack + STACK_SIZE - sizeof(CPUState);
-
+    
     state->rip = (uint64_t)main;
-    task->rsp = (uintptr_t)state;
     state->rflags = 0x202;
+    
+    task->rsp = (uintptr_t)state;
 }
 
 
