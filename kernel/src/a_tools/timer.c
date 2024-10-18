@@ -23,7 +23,7 @@ int global_sound_time;
 InterruptRegisters* onIrq0(InterruptRegisters* regs) {
     ticks += 1;
     clock_ticks++;
-
+    
     if (sound_delay == true) {
         checkPlaySoundTimed();
         sound_delay_seconds++;

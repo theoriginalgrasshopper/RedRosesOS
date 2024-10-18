@@ -12,17 +12,19 @@
 static Task *current_task;
 static Task main_task;
 static Task other_task;
-extern void task_switch(uintptr_t from_one, uintptr_t to_another);
+extern void task_switch(uintptr_t *from_one, uintptr_t to_another);
 extern bool shift_pressed;
 
 void taskA() {
     while(1){
+        fill_screen(green);
         yield();
     }
 }
 
 void taskB(){
     while(1){
+        fill_screen(nice_red);
         yield();
     }
 }
@@ -48,11 +50,11 @@ void task_create(Task *task, void (*main)()) {
     CPUState *state = task_stack + STACK_SIZE - sizeof(CPUState);
     
     state->rip = (uint64_t)main;
-    state->rflags = 0x202;
+    state->rflags = 0x202; 
     
     task->rsp = (uintptr_t)state;
+    task->next = 0;
 }
-
 
 void multitasking_init(){
     task_create(&main_task, taskA);    
@@ -67,7 +69,7 @@ void multitasking_init(){
 void yield(){
     Task *last = current_task;
     current_task = current_task->next;
-    task_switch(last->rsp, current_task->rsp);
+    task_switch(&last->rsp, current_task->rsp); // last is a pointer to a pointer, current task is a pointer
 }
 
 void test_multitasking(){

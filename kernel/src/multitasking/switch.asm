@@ -8,7 +8,7 @@ task_switch:
     push r15
     pushfq
 
-    mov rdi, rsp
+    mov [rdi], rsp
     mov rsp, rsi
 
     popfq

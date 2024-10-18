@@ -162,7 +162,7 @@ void _start(void) {
     mouse_init();    
 
     cursor_pos_y = 0;
-    main_menu();
+    //main_menu();
     
     cursor_pos_y = 0;
     cursor_pos_x = 0;
