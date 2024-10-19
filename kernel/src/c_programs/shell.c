@@ -1,4 +1,3 @@
-//#include <drivers/keyboard.h>
 #include "shell.h"
 #include <sprint.h>
 #include <include/constants.h>
@@ -24,8 +23,9 @@
 #include <drivers/keyboard.h>
 #include <software/petals.h>
 #include <a_tools/clock.h>
+#include <multitasking/multitasking.h>
 
-// ALL THE COMMANDS
+// FLAGS
 extern int mode;
 extern bool exec_flag;
 
@@ -63,6 +63,9 @@ void command_init(){
     }
     if ( string_same(input_buffer, "reboot") ){
         reboot();
+    }
+    if ( string_same(input_buffer, "multitasking-test") ){
+        yield();
     }
     if ( string_same(input_buffer, "sound-stop") ){
         stopSound();
@@ -123,9 +126,6 @@ void command_init(){
         sprint("cat              | cat\n\n", white);
     }
 
-    
-
-
     // COMANDS WITH ARGUMENTS
 
     commands_with_argument_init(input_buffer);
@@ -183,9 +183,7 @@ void sprint_remove_char(){
     int length_of_char = 1;
     for (int i = 0; i < length_of_char; i++) {
         print_char_at('!', cursor_pos_x - 1, cursor_pos_y, black); 
-        cursor_pos_x = cursor_pos_x - 1; 
-        // print the cursor for debug
-        //print_char_at('>', cursor_pos_x, cursor_pos_y, 0xffffff);
+        cursor_pos_x = cursor_pos_x - 1;
     }
 
 }

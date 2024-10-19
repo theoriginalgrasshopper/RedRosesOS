@@ -117,27 +117,26 @@ static void hcf(void) {
 }
 
 void _start(void) {
-    // Ensure the bootloader actually understands our base revision (see spec).
+    // base revision right?
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
         hcf();
     }
 
-    // Ensure we got a framebuffer.
-    if (framebuffer_request.response == NULL
-     || framebuffer_request.response->framebuffer_count < 1) {
+    // do we have a framebuffer??
+    if (framebuffer_request.response == NULL || framebuffer_request.response->framebuffer_count < 1) {
         hcf();
     }
 
-    // Fetch the first framebuffer.
+    // get 1 framebuffer
     struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    //  -------------- ACTUAL KERNEL START, (BESIDES THE LINE DRAWING SHUT UP )-----------------------
+    //  ----------------------------------ACTUAL KERNEL START-----------------------------------------
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    fb_addr = (volatile uint32_t*) framebuffer->address; // one line to make it work smh
+    fb_addr = (volatile uint32_t*) framebuffer->address;
 
     sprint("booting RedRosesOS: ", white);
     sprint(os_release, nice_red);
@@ -147,22 +146,21 @@ void _start(void) {
     sprint("colour too \n", 0x123123);
     sprint("pretty pink \n\n\n", 0xe81e8d);
     
-    __asm__ ("sti");
-    
     GDT_init();
     pmm_init();
     IDT_init();
 
+    __asm__ ("sti");
+
     multitasking_init(); //do not uncomment until the system works. I will try something drastic    
     initTimer();
-    test_multitasking();
-    
+
     keyboard_init();
     ATA_ALL_INIT();
     mouse_init();    
 
     cursor_pos_y = 0;
-    //main_menu();
+    main_menu();
     
     cursor_pos_y = 0;
     cursor_pos_x = 0;

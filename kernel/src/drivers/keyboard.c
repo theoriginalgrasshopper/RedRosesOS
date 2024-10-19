@@ -173,6 +173,7 @@ InterruptRegisters* keyboard_handler(InterruptRegisters* regs) {
 
 			default:
                 char c = getch(scancode); // <-------------- horrible
+                
                 if (scancode == 72){ // ^ key
                     sprint(input_buffer_history, white);
                     str_copy(input_buffer_history, input_buffer);

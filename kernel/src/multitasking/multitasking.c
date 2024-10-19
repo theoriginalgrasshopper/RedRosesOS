@@ -12,23 +12,35 @@
 static Task *current_task;
 static Task main_task;
 static Task other_task;
+static Task other_task2;
 extern void task_switch(uintptr_t *from_one, uintptr_t to_another);
-extern bool shift_pressed;
 
-void taskA() {
+void Eve(){ // main
     while(1){
-        fill_screen(green);
         yield();
     }
+}
+
+void taskA() {
+    for(int i=0; i<10; i++){
+        fill_screen(red);
+        yield();
+    }
+    yield();
 }
 
 void taskB(){
-    while(1){
-        fill_screen(nice_red);
+    for(int i=0; i<10; i++){
+        fill_screen(green);
         yield();
     }
+    come_back();
 }
 
+void come_back(void){
+    task_switch(&current_task->rsp, main_task.rsp);
+    current_task = &main_task;
+}
 
 void quit() {
     Task* current = current_task;
@@ -44,7 +56,6 @@ void process_end(void) {
     for (;;); // ensure the process does actually quit instead of shitting around
 }
 
-
 void task_create(Task *task, void (*main)()) {
     uint64_t* task_stack = (uint64_t*)malloc(STACK_SIZE);
     CPUState *state = task_stack + STACK_SIZE - sizeof(CPUState);
@@ -53,27 +64,25 @@ void task_create(Task *task, void (*main)()) {
     state->rflags = 0x202; 
     
     task->rsp = (uintptr_t)state;
-    task->next = 0;
+    
+    sprint("\n\ntask created\n", green);
 }
 
 void multitasking_init(){
-    task_create(&main_task, taskA);    
-    task_create(&other_task, taskB);
-    
+    task_create(&main_task, Eve);     
+    task_create(&other_task, taskA);
+    task_create(&other_task2, taskB);
+
     main_task.next = &other_task;
-    other_task.next = &main_task;
+    other_task.next = &other_task2;
+    other_task2.next = &other_task;
 
     current_task = &main_task;
-}
 
-void yield(){
+    sprint("\n\nmultitasking initialized stage 1\n", green);
+}
+void yield() {
     Task *last = current_task;
     current_task = current_task->next;
-    task_switch(&last->rsp, current_task->rsp); // last is a pointer to a pointer, current task is a pointer
-}
-
-void test_multitasking(){
-    sprint("switching to other task... \n", white);
-    yield();
-    sprint("returned to main task!\n", white);
+    task_switch(&last->rsp, current_task->rsp);   
 }

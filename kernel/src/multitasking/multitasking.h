@@ -24,4 +24,5 @@ void task_create(Task *task, void (*main)());
 void yield();
 void multitasking_init();
 void test_multitasking();
+void come_back(void);
 #endif
