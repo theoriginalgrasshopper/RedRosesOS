@@ -12,6 +12,7 @@
 #include "clear_screen.h"
 #include <interrupts/idt.h>
 #include <drivers/keyboard.h>
+#include <drivers/keyproc.h>
 #include <include/constants.h>
 #include <c_programs/clear_and_print.h>
 #include <a_tools/timer.h>
@@ -28,7 +29,7 @@
 #include <a_tools/convert_to_int.h>
 #include <multitasking/multitasking.h>
 
-extern void yield();
+//extern void yield();
 //#include "screen.c"
 // Set the base revision to 2, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -179,6 +180,16 @@ void _start(void) {
     } 
 
     playSoundTimed(880, 2);
-    extern int mode;
     mode = 1;
+
+    // Flush the scancode buffer
+    keyboard_flush();
+
+    // Main process loop
+    while (true) {
+        // See if there is a key waiting to be processed
+        process_keys();
+        // Halt until the next interrupt occurs
+        __asm__("hlt");
+    }
 }

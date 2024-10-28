@@ -6,6 +6,7 @@
 #include <clear_screen.h>
 #include <gdt.h>
 #include <drivers/keyboard.h>
+#include <drivers/keyproc.h>
 #include <stdbool.h>
 #include <a_tools/convert_to_int.h>
 #include <interrupts/pic.h>
@@ -32,6 +33,7 @@ void Adam(){ // main2
 
 void taskA() {
     while(1){
+        process_keys();
         fill_screen(red);
         yield();
     }
@@ -85,6 +87,7 @@ void multitasking_init(){
     main_task.next = &other_task;
     other_task.next = &other_task2;
     other_task2.next = &other_task;
+//    other_task2.next = &main_task2;
     main_task2.next = &main_task;
 
     current_task = &main_task;

@@ -1,2 +1,3 @@
+#include<stdint.h>
 // tty 1, gui 2
-int mode;
+volatile uint64_t mode;

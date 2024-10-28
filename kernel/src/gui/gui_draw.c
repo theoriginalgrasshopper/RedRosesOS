@@ -8,8 +8,6 @@
 #include <drivers/mouse.h>
 #include "gui_draw.h"
 
-extern int mode;
-
 void gui_init(){
     mode = 2;
     fill_screen(0x614a39);

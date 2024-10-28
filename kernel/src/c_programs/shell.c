@@ -24,9 +24,9 @@
 #include <software/petals.h>
 #include <a_tools/clock.h>
 #include <multitasking/multitasking.h>
+#include <gui/mode.h>
 
 // FLAGS
-extern int mode;
 extern bool exec_flag;
 
 void command_init(){
