@@ -531,7 +531,7 @@ uint32_t Get_size(uint32_t root_dir_sector, const char* filepath) {
     return NULL;
 }
 
-char* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath) {
+void* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath) {
     char components[16][12];
     int component_count = 0;
     split_path(filepath, components, &component_count);
@@ -621,10 +621,10 @@ char* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath)
                 // allocate buffer dynamically based on file size
                 size_t pages_needed = CEIL_DIV(file_size, PAGE_SIZE);
                 size_t buffer_size = pages_needed * PAGE_SIZE;
-                char* output_read = (char*)pmm_alloc_quiet(buffer_size);
+                void* output_read = pmm_alloc_quiet(buffer_size);
                 if (output_read == NULL) {
                     sprint("failed to allocate memory for file\n", red);
-                    return;
+                    return NULL;
                 }
 
                 int output_read_pos = 0;
@@ -634,7 +634,7 @@ char* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath)
 
                     // store file contents
                     for (int i = 0; i < 512 && file_size > 0 && output_read_pos < buffer_size; i++, file_size--) {
-                        output_read[output_read_pos++] = buffer[i];
+                        ((char*)output_read)[output_read_pos++] = buffer[i];
                     }
 
                     ATA_Read28_PM_INTO_BUFFER(2048 + bpb->reserved_sector_count + (cluster / 128), 512, buffer);
@@ -653,6 +653,7 @@ char* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath)
     sprint("\n", white);
     return NULL;
 }
+
 
 void Create_File_path(uint32_t root_dir_sector, const char* filepath, const char* extension) {
     char components[16][12]; // hardcoding 16
@@ -1159,7 +1160,7 @@ void readfile(const char* filename){
     Read_BPB_quiet(0);
     Read_File_path(root_dir_sector_public, filename);
 }
-char* readfile_into_buffer(const char* filename){
+void* readfile_into_buffer(const char* filename){
     Read_BPB_quiet(0);
     Read_BPB_quiet(0);
     Read_BPB_quiet(0);

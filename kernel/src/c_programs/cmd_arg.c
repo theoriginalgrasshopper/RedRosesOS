@@ -83,7 +83,6 @@ void commands_with_argument_init(char string_to_say[]) {
             i++;
         }
     }
-
     // COMPATIBILITY FOR THE FUNCTIONS I MADE
     // ONE
     if (argument_count > 0) {
@@ -121,7 +120,7 @@ void commands_with_argument_init(char string_to_say[]) {
         }
         characters_after_argsym_fourth[j] = '\0';
     }
-}   // CAN ADD MORE BUT DONT NEED FOR NOW
+}
 
 void reset_arguments(){
     memset(characters_after_argsym, 0, sizeof(characters_after_argsym));
@@ -130,11 +129,7 @@ void reset_arguments(){
     memset(characters_after_argsym_fourth, 0, sizeof(characters_after_argsym_fourth));
 }
 
-
-
-
 // ACTUAL COWSAY
-
 
 void cowsay(){
     if ( string_same(characters_before_argsym, "cowsay") ){
@@ -184,12 +179,13 @@ void random(){
         int random_num_one = string_to_int(characters_after_argsym);
         int random_num_two = string_to_int(characters_after_argsym_second);         
         int random_num = give_random(random_num_one, random_num_two);
-        char random_num_c[999999999];
+        char random_num_c[256];
         int_to_str(random_num, random_num_c);
         sprint(random_num_c, cyan);
         sprint("\n", white);
     }
 }
+
 int result;
 void math(){
     if (string_same(characters_before_argsym, "math")){
@@ -223,6 +219,7 @@ void math(){
         sprint("\n", white);
     }
 }
+
 void sprint_raw(uint8_t* data, int length, int color) {
     for (int i = 0; i < length; i++) {
         char text[2] = { data[i], '\0' }; 
@@ -329,5 +326,13 @@ void write(){
 
         sprint(characters_after_argsym_fourth, white);
         overwrite(formatted_path, characters_after_argsym_third, string_to_int(characters_after_argsym_fourth));
+    }
+}
+
+void invoke_syscall(){
+    if (string_same(characters_before_argsym, "syscall-invoke")){
+        //int syscall_num = string_to_int(characters_after_argsym);
+        __asm__ volatile ("movq $1, %rax;" 
+                          "int $0x10");
     }
 }

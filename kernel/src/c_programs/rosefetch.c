@@ -16,7 +16,7 @@ extern int cursor_pos_x;
 
 void rosefetch(){
     sprint("\n", white);
-    char* logo = readfile_into_buffer("/ROS_ICOS   /ROSFETC RAS");
+    char* logo = readfile_into_buffer("/REDROSES   /ICONS      /ROSFETC RAS");
     sprint(logo, nice_red);
 
     cursor_pos_x += 25;

@@ -1,9 +1,13 @@
 obj/interrupts/isr.c.o: src/interrupts/isr.c src/interrupts/isr.h \
  src/interrupts/idt.h src/interrupts/cpu.h src/sprint.h \
- src/interrupts/io.h src/include/constants.h
+ src/interrupts/io.h src/include/constants.h src/interrupts/pic.h \
+ src/syscalls/syscall.h src/screen.h
 src/interrupts/isr.h:
 src/interrupts/idt.h:
 src/interrupts/cpu.h:
 src/sprint.h:
 src/interrupts/io.h:
 src/include/constants.h:
+src/interrupts/pic.h:
+src/syscalls/syscall.h:
+src/screen.h:

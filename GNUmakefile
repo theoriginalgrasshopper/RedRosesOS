@@ -33,7 +33,7 @@ run-hdd: $(IMAGE_NAME).hdd
 
 .PHONY: run-img
 run-img: $(IMAGE_NAME).img
-	qemu-system-x86_64 -trace ps2_keyboard_event -M pc -m 2G -drive file=RedRosesOS.img,format=raw -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio
+	qemu-system-x86_64 -M pc -m 2G -drive file=RedRosesOS.img,format=raw -audiodev pa,id=snd0 -machine pcspk-audiodev=snd0 -monitor stdio
 
 .PHONY: run-debug
 run-debug: $(IMAGE_NAME).img
@@ -93,6 +93,7 @@ $(IMAGE_NAME).img: limine/limine kernel
 	parted -s $(IMAGE_NAME).img set 1 boot on
 	./limine/limine bios-install $(IMAGE_NAME).img
 	mformat -i $(IMAGE_NAME).img@@1M -F
+	
 	mmd -i $(IMAGE_NAME).img@@1M ::/EFI ::/EFI/BOOT ::/boot ::/boot/limine
 	mcopy -i $(IMAGE_NAME).img@@1M kernel/bin/kernel ::/boot
 	mcopy -i $(IMAGE_NAME).img@@1M bg.jpg ::/boot
@@ -103,12 +104,14 @@ $(IMAGE_NAME).img: limine/limine kernel
 	mmd -i $(IMAGE_NAME).img@@1M ::/REDROSES
 	mmd -i $(IMAGE_NAME).img@@1M ::/REDROSES/ICONS
 	mmd -i $(IMAGE_NAME).img@@1M ::/APPS
+	mmd -i $(IMAGE_NAME).img@@1M ::/APPS/SOURCE
 	mmd -i $(IMAGE_NAME).img@@1M ::/DOCS
 	mmd -i $(IMAGE_NAME).img@@1M ::/PICTURES
 	
 	mcopy -i $(IMAGE_NAME).img@@1M external/icons/MOS_ICO.RSI ::/REDROSES/ICONS
 	mcopy -i $(IMAGE_NAME).img@@1M external/icons/ROSFETC.RAS ::/REDROSES/ICONS
-	mcopy -i $(IMAGE_NAME).img@@1M external/apps/* ::/APPS
+	mcopy -i $(IMAGE_NAME).img@@1M external/apps/* ::/APPS/SOURCE
+	mcopy -i $(IMAGE_NAME).img@@1M external/bin/* ::/APPS
 
 .PHONY: clean
 clean:

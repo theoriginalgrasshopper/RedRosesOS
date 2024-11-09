@@ -8345,9 +8345,6 @@ RLEPixel rle_image[] = {
 };
 int rle_image_size = 8333;
 int rle_image_width = 514;
-
-
-
 // draw image
 void draw_rle_image(RLEPixel *image, int size, int start_x, int start_y) {
     int x_pos = start_x;
@@ -8363,12 +8360,6 @@ void draw_rle_image(RLEPixel *image, int size, int start_x, int start_y) {
         }
     }
 }
-
-
-
-
-
-
 // BAD
 void draw_image(int *image, int size_x, int size_y){
     int index = 0;

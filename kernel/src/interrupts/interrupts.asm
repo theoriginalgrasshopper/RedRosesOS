@@ -43,7 +43,9 @@ isr_common:
     PUSHALL
 
     mov rdi, rsp
+
     call ISR_handler
+    
     mov rsp, rax
 
     POPALL

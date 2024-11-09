@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 uint32_t hardware_random() {
-    return clock_ticks ^ seconds ^ (clock_ticks >> 3) ^ (seconds << 5);
+    return ticks ^ seconds ^ (ticks >> 3) ^ (seconds << 5);
 }
 
 int give_random(int first_num, int second_num) {

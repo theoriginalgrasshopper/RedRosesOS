@@ -2,12 +2,10 @@
 #include <drivers/keyboard.h>
 #include <c_programs/shell.h>
 #include <drivers/disk/fat.h>
-#include <memory_management/pmm.h>
 #include <sprint.h>
 #include <include/constants.h>
 
 bool exec_flag;
-extern char input_buffer[256];
 
 void run_script(char* filepath){
     exec_flag = 1;
@@ -24,25 +22,21 @@ void run_script(char* filepath){
     for (int i = 0; i < strlen(file); i++) {
         char current_char = file[i];
 
-        if (current_char == 0x0A) {
+        if (current_char == 0x0A) { // newline
             current_command[command_index] = '\0';  
             command_index = 0;  
-            str_copy(current_command, input_buffer);
-            command_init();
+            command_process(current_command);
         } 
         
-        else if (current_char == ';') {
+        else if (current_char == ';') { // endline
             current_command[command_index] = '\0';   
             command_index = 0;
-            str_copy(current_command, input_buffer);
-            command_init();
+            command_process(current_command);
         } 
         else {
-
             if (command_index < sizeof(current_command) - 1) {
                 current_command[command_index++] = current_char;
             }
-
             else {
                 sprint("command was too long.\n ", red);
                 command_index = 0; 
@@ -52,13 +46,8 @@ void run_script(char* filepath){
 
     // here do the thing, current_command contains the command needed
     if (command_index > 0) {
-        current_command[command_index] = '\0';
-        
-        str_copy(current_command, input_buffer);
-        command_init();
+        current_command[command_index] = '\0';       
+        command_process(current_command);
     }
-
-
-    pmm_free_auto();
     exec_flag = 0;
 }

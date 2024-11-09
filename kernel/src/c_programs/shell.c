@@ -4,7 +4,7 @@
 #include "clear_and_print.h"
 #include <screen.h>
 #include "reboot.h"
-#include "cowsay.h"
+#include "cmd_arg.h"
 #include <a_tools/timer.h>
 #include <a_tools/convert_to_int.h>
 #include "rosefetch.h"
@@ -15,7 +15,7 @@
 #include "start_menu.h"
 #include "cmd_cursor.h"
 #include <memory_management/pmm.h>
-#include <gui/gui_draw.h>
+#include <gui/gui_lib.h>
 #include <gui/mode.h>
 #include <drivers/disk/mbr.h>
 #include <drivers/disk/fat.h>
@@ -24,21 +24,80 @@
 #include <software/petals.h>
 #include <a_tools/clock.h>
 #include <multitasking/multitasking.h>
+#include <interrupts/pic.h>
 
 // FLAGS
 extern int mode;
 extern bool exec_flag;
 
-void command_init(){
+// KEYS
+extern bool shift_pressed;
+extern bool backspace_pressed;
+extern bool enter_pressed;
+extern bool caps_pressed;
+extern bool up_pressed;
 
+
+// CHARACTER
+extern char current_character;
+char input_buffer[256] = {0};
+char input_buffer_history[256] = {0};
+
+// THE ACTUAL SHELL
+// ABSOLUTELY NO CLUE WHERE THE \n COMES FROM WHEN ENTER PRESSED, DO NOT CARE.
+
+void bouquet_shell_task() {
+    char ch = get_current_character();
+    uint8_t scncd = get_current_scancode();
+
+    if (ch != '\0' && scncd != 65) { // not
+                                     // NULL
+                                     // or
+                                     // THE OS GAINING CONSCIOUSNESS
+        // ENTER
+        if (scncd == ENTER){
+            print_char_at('_', cursor_pos_x, cursor_pos_y, black);
+            str_copy(input_buffer, input_buffer_history);
+            command_process(input_buffer);
+            input_buffer[0] = '\0';
+
+        // BACKSPACE
+        } else if (scncd == BACKSPACE){ 
+            if (strlen(input_buffer) > 0) {
+                sprint_remove_char(input_buffer);
+                init_cmd_cursor();
+                print_char_at('_', cursor_pos_x + 1, cursor_pos_y, black);
+            }
+        
+        // UP
+        } else if (scncd == UP){
+            str_copy(input_buffer_history, input_buffer);
+            sprint(input_buffer_history, white);
+        
+        // DEFAULT
+        } else {
+            append(input_buffer, ch);
+            sprint_char(ch, white);
+            init_cmd_cursor();
+        }
+
+        scncd = '\0';
+        current_character = '\0';
+    }
+}
+
+// COMMANDS
+
+void command_process(char* the_string){
     // COMMANDS WITHOUT ARGUMENTS
     if (exec_flag != 1){
         sprint("\n", white);
     }
-    if ( string_same(input_buffer, "rosefetch") ){
+    
+    if ( string_same(the_string, "rosefetch") ){
         rosefetch();
     }
-    if ( string_same(input_buffer, "explode") ){
+    if ( string_same(the_string, "explode") ){
         while (1){
             playSound(1760);
             fill_screen(magenta);
@@ -49,48 +108,45 @@ void command_init(){
             fill_screen(yellow);
         }
     }
-    if ( string_same(input_buffer, "start-menu") ){
+    if ( string_same(the_string, "start-menu") ){
         main_menu();
     }
-    if ( string_same(input_buffer, "clear") ){
+    if ( string_same(the_string, "clear") ){
         clear_and_print();
     }
-    if ( string_same(input_buffer, "about") ){
+    if ( string_same(the_string, "about") ){
         sprint("\nRedRosesOS is a 64-bit O.S. made by theoriginalgrasshopper and with the help of AbdooOwd\n \n", nice_orange);
     }
-    if ( string_same(input_buffer, "qemu-shutdown") ){
+    if ( string_same(the_string, "qemu-shutdown") ){
         outw(0x604, 0x2000);
     }
-    if ( string_same(input_buffer, "reboot") ){
+    if ( string_same(the_string, "reboot") ){
         reboot();
     }
-    if ( string_same(input_buffer, "multitasking-test") ){
-        yield();
-    }
-    if ( string_same(input_buffer, "sound-stop") ){
+    if ( string_same(the_string, "sound-stop") ){
         stopSound();
     }
-    if ( string_same(input_buffer, "scroll") ){
+    if ( string_same(the_string, "scroll") ){
         scroll_pixel_line();
     }
-    if ( string_same(input_buffer, "mbr-read") ){
+    if ( string_same(the_string, "mbr-read") ){
         read_mbr();
     }
-    if ( string_same(input_buffer, "ls-root") ){
+    if ( string_same(the_string, "ls-root") ){
         Read_BPB_quiet(0);
         Read_root_dir();
     }
-    if ( string_same(input_buffer, "cat") ){
+    if ( string_same(the_string, "cat") ){
         draw_rle_image(rle_image, rle_image_size, cursor_pos_x, cursor_pos_y);
     }
-    if ( string_same(input_buffer, "date") ){
+    if ( string_same(the_string, "date") ){
         read_rtc();
     }
-    if ( string_same(input_buffer, "gui") ){
+    if ( string_same(the_string, "gui") ){
         stop_cmd_cursor();
         gui_init();
     }
-    if ( string_same(input_buffer, "help") ){
+    if ( string_same(the_string, "help") ){
         sprint("AVIABLE COMMANDS: \n\n", blue);
         sprint("GENERAL \n\n", green); 
         sprint("clear            | clears the screen \n", white);
@@ -128,7 +184,7 @@ void command_init(){
 
     // COMANDS WITH ARGUMENTS
 
-    commands_with_argument_init(input_buffer);
+    commands_with_argument_init(the_string);
     cowsay();
     say_times_what();
     sound();
@@ -145,6 +201,7 @@ void command_init(){
     mkdir();
     execute();
     execute_bin();
+    invoke_syscall();
 
     // SHELL CHARACTER
     if(mode == 1 && exec_flag != 1){
@@ -153,31 +210,13 @@ void command_init(){
     reset_arguments();
 }
 
-void shift_button_pressed(){
-    if ( shift_pressed == true ){
-    }
-    if ( shift_pressed == false ){
-    }
-}
-void backspace_button_pressed(){
-    if ( backspace_pressed == true ){
-        sprint_remove_char();
-    }
-}
-void enter_button_pressed(){
-    if ( enter_pressed == true ){
-        sprint("AAAAA ENTER", red);
-        sprint("\n", white);
-    }
-}
-
 // REMOVE ONE CHARACTER
 
-void sprint_remove_char(){
-    int lenght_of_string = strlen(input_buffer);  
+void sprint_remove_char(char* string){
+    int lenght_of_string = strlen(string);  
     
     if (lenght_of_string > 0) {
-        input_buffer[lenght_of_string - 1] = '\0';  
+        string[lenght_of_string - 1] = '\0';  
     }
 
     int length_of_char = 1;

@@ -9,16 +9,22 @@
 #include <stdbool.h>
 #include <a_tools/convert_to_int.h>
 #include <interrupts/pic.h>
+#include <c_programs/shell.h>
+#include <gui/gui_lib.h>
 
-static Task *current_task;
+Task *current_task;
 static Task main_task;
 static Task main_task2;
+
 Task other_task;
 Task other_task2;
+Task other_task3;
+
 extern void task_switch(uintptr_t *from_one, uintptr_t to_another);
 
 int pid = 1;
 
+// MAIN -----------------------------
 void Eve(){ // main
     while(1){
         yield();
@@ -26,50 +32,51 @@ void Eve(){ // main
 }
 void Adam(){ // main2
     while(1){
-        yield();
     }
 }
 
+// SLOTS -------------------------------
 void taskA() {
-    while(1){
-        fill_screen(red);
-        yield();
-    }
 }
+
 void taskB(){
-    while(1){
-        fill_screen(nice_red);
-        yield();
+}
+
+void taskC(){
+    while (1){
+        bouquet_shell_task();
     }
 }
 
-void come_back(void){
-    pid--;
-    task_create(&other_task, taskA);
-    task_create(&other_task2, taskB);
-    current_task = &main_task2;
-    yield();  
-}
-
-void quit() {
+// FUNCTIONS
+void quit(int exit_code) {
     Task* current = current_task;
+    
+    sprint("\nA task with the PID of ", nice_orange);
+    sprint_int(current->pid);
+    sprint(" has exited.\nThe return code was ", nice_orange);
+    sprint_int(exit_code);
+
     while (current->next != current_task) {
         current = current->next;
     }
     current->next = current_task->next;
+    pid--;
     yield();
 }
 
-void process_end(void) {
-    quit();
+void process_end(int exit_code) {
+    quit(exit_code);
     for (;;); // ensure the process does actually quit instead of shitting around
 }
 
 void task_create(Task *task, void (*main)()) {
-    uint64_t* task_stack = (uint64_t*)malloc(STACK_SIZE);
+    uint64_t* task_stack = (uint64_t*)pmm_alloc_quiet(STACK_SIZE);
     CPUState *state = task_stack + STACK_SIZE - sizeof(CPUState);
     
     state->rip = (uint64_t)main;
+    
+    // get current rflags
     __asm__ volatile("pushfq; movq (%%rsp), %%rax; movq %%rax, %0; popfq;":"=m"(state->rflags):: "%rax");    
     task->rsp = (uintptr_t)state;
     task->pid = pid;
@@ -80,13 +87,16 @@ void multitasking_init(){
     task_create(&main_task, Eve);     
     task_create(&other_task, taskA);
     task_create(&other_task2, taskB);
+    task_create(&other_task3, taskC);
     task_create(&main_task2, Adam);
 
     main_task.next = &other_task;
-    other_task.next = &other_task2;
-    other_task2.next = &other_task;
-    main_task2.next = &main_task;
 
+    other_task.next = &other_task2;
+    other_task2.next = &other_task3;
+    other_task3.next = &other_task;
+
+    main_task2.next = &main_task;
     current_task = &main_task;
 
     sprint("\n\nmultitasking initialized stage 1\n", green);

@@ -42,7 +42,7 @@ override DEFAULT_KNASMFLAGS := -F dwarf -g
 $(eval $(call DEFAULT_VAR,KNASMFLAGS,$(DEFAULT_KNASMFLAGS)))
 
 # User controllable linker flags. We set none by default.
-override DEFAULT_KLDFLAGS :=
+override DEFAULT_KLDFLAGS := -z notext
 $(eval $(call DEFAULT_VAR,KLDFLAGS,$(DEFAULT_KLDFLAGS)))
 
 # Internal C++ flags that should not be changed by the user.

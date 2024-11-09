@@ -26,7 +26,13 @@
         "multitasking.h": "c",
         "clear_and_print.h": "c",
         "cmd_cursor.h": "c",
-        "pmm.h": "c"
+        "pmm.h": "c",
+        "gui_lib.h": "c",
+        "random": "c",
+        "util.h": "c",
+        "pic.h": "c",
+        "visual.h": "c",
+        "unistd.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

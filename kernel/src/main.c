@@ -27,13 +27,14 @@
 #include <a_tools/clock.h>
 #include <a_tools/convert_to_int.h>
 #include <multitasking/multitasking.h>
+#include <interrupts/pic.h>
+#include <software/binary.h>
+#include <../../external/apps/RoseLib/visual.h>
 
 extern void yield();
-//#include "screen.c"
-// Set the base revision to 2, this is recommended as this is the latest
-// base revision described by the Limine boot protocol specification.
-// See specification for further info.
+bool ready_to_yield;
 
+// Set the base revision to 2, this is recommended as this is the latest
 __attribute__((used, section(".requests")))
 static volatile LIMINE_BASE_REVISION(2);
 
@@ -157,7 +158,7 @@ void _start(void) {
 
     keyboard_init();
     ATA_ALL_INIT();
-    mouse_init();    
+    mouse_init();
 
     cursor_pos_y = 0;
     main_menu();
@@ -178,7 +179,17 @@ void _start(void) {
         sprint("good night", nice_orange);
     } 
 
-    playSoundTimed(880, 2);
+    playSoundTimed(880, 4);
     extern int mode;
     mode = 1;
+    PIC_eoi(1);
+    PIC_eoi(12);
+    
+    // TEST SYSCALLS AND BINARY HERE!
+    
+   //sys_print_func("hello from a syscall"); // <--- this works
+   //sys_draw_pixel_func(0, 0, red); // <--- this also works
+    execute_flat_binary("/APPS       /ROSEBIN REB");
+
+    ready_to_yield = 1;
 }

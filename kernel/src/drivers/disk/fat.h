@@ -20,9 +20,9 @@ void createfile(const char* filename2, const char* ext);
 uint32_t Find_Free_Cluster();
 void FAT32_Set_FAT_Entry(uint32_t current_cluster, uint32_t next_cluster);
 void overwrite(const char* filename3, const char* data, uint32_t size);
-char* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath);
+void* Read_File_path_INTO_BUFFER(uint32_t root_dir_sector, const char* filepath);
 void split_path(const char* path, char components[][12], int* count);
 uint32_t get_file_size(const char* filename);
-char* readfile_into_buffer(const char* filename);
+void* readfile_into_buffer(const char* filename);
 
 #endif

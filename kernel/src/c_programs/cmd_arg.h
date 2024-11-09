@@ -21,4 +21,5 @@ void mkdir();
 void execute();
 void read();
 void execute_bin();
+void invoke_syscall();
 #endif

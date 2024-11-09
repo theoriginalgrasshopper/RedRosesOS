@@ -13,9 +13,10 @@ char getch(uint8_t scancode);
 int string_compare(char* s1, char* s2);
 void append(char* str, char c);
 bool string_same(char* str1, char* str2);
-void user_input(char* input);
 extern int cursor_pos_y;
+uint8_t get_current_scancode();
 extern int cursor_pos_x;
 size_t strlen(char* str);
+uint8_t get_current_character();
 extern bool start_menu_active;
 #endif

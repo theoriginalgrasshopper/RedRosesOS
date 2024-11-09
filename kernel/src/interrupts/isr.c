@@ -2,6 +2,8 @@
 #include <sprint.h>
 #include "io.h"
 #include <include/constants.h>
+#include "pic.h"
+#include <syscalls/syscall.h>
 
 char* exception_messages[] = {
     "Division By Zero",
@@ -38,10 +40,13 @@ char* exception_messages[] = {
     "Reserved",
     "Timer",
 };
-
+// capture interrupt with a magic number 10, get all the registers that 
+// currently exists in the interrupt frame, update registers if a
+// syscall was fired. The syscall handler will then analize the registers
 InterruptRegisters* ISR_handler(InterruptRegisters* regs) {
-    if (regs->interrupt > 15 && regs->interrupt < 80) {
-        sprint("an unhandled interrupt occured.", red);
+    if (regs->interrupt == 0x10) {
+        regs = syscall_handler(regs);
     }
     return regs;
 }
+

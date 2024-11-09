@@ -11,38 +11,44 @@
 #include <interrupts/io.h>
 #include <multitasking/multitasking.h>
 #include <memory_management/pmm.h>
+#include <interrupts/pic.h>
 
-volatile uint64_t clock_ticks = 0;
 volatile uint64_t ticks = 0;
+
 uint32_t freq = 1;
+
 volatile int seconds = 0;
+
 volatile int sound_delay_seconds = 0;
 bool sound_delay;
+
 int global_sound_time;
+extern bool ready_to_yield;
 
 InterruptRegisters* onIrq0(InterruptRegisters* regs) {
-    ticks += 1;
-    clock_ticks++;
+    ticks ++;
     
-    if (sound_delay == true) {
+    if (sound_delay) {
         checkPlaySoundTimed();
         sound_delay_seconds++;
     }
 
-    if (clock_ticks % 315 == 0) {  
+    if (ticks % 315 == 0) {  
         seconds++;
-
         if (cmd_cursor_delay == true) {
-            if (clock_ticks % 2 == 0) {
+            if (ticks % 2 == 0) {
                 draw_cmd_cursor_animation();
             } else {
                 draw_cmd_cursor_animation_white();
             }
         }
     }
+    if (ready_to_yield){
+        PIC_eoi(0);
+        yield();
+    }
     return regs;  
 }
-
 
 void initTimer(){
     ticks = 0;

@@ -1,5 +1,8 @@
 #ifndef MULTITASKING_H
 #define MULTITASKING_H
+
+#pragma once
+
 #include <stddef.h>
 #include <stdint.h>
 #include <interrupts/idt.h>
@@ -20,10 +23,11 @@ typedef struct Task {
     uintptr_t rsp;
     int pid;
 } Task;
-void process_end(void);
+
+void quit(int exit_code);
+void process_end(int exit_code);
 void task_create(Task *task, void (*main)());
 void yield();
 void multitasking_init();
-void test_multitasking();
-void come_back(void);
+
 #endif

@@ -9,7 +9,7 @@
 
 
 void gui_init();
-
+void draw_rectangle(int colour, int starty, int startx, int y, int x);
 
 
 
