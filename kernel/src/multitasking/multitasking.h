@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <interrupts/idt.h>
+#include <stdbool.h>
 
 typedef struct {
     size_t rflags;
@@ -22,10 +23,9 @@ typedef struct Task {
     struct Task* next;
     uintptr_t rsp;
     int pid;
+    bool occupied;
 } Task;
-
-void quit(int exit_code);
-void process_end(int exit_code);
+void task_create_wrapper(void (*main)());
 void task_create(Task *task, void (*main)());
 void yield();
 void multitasking_init();

@@ -3,9 +3,6 @@
 #include <stdbool.h>
 #include <limine.h>
 #include <stdint.h>
-//#include "global_vars.h"
-//#include <include/font.h>
-//#include <include/types.h>
 #include "screen.h"
 #include "sprint.h"
 #include "gdt.h"
@@ -29,7 +26,7 @@
 #include <multitasking/multitasking.h>
 #include <interrupts/pic.h>
 #include <software/binary.h>
-#include <../../external/apps/RoseLib/visual.h>
+//#include <../../external/apps/RoseLib/visual.h>
 
 extern void yield();
 bool ready_to_yield;
@@ -183,13 +180,8 @@ void _start(void) {
     extern int mode;
     mode = 1;
     PIC_eoi(1);
-    PIC_eoi(12);
-    
-    // TEST SYSCALLS AND BINARY HERE!
-    
-   //sys_print_func("hello from a syscall"); // <--- this works
-   //sys_draw_pixel_func(0, 0, red); // <--- this also works
-    execute_flat_binary("/APPS       /ROSEBIN REB");
+    PIC_eoi(12);    
+    execute_elf_binary("/APPS       /ROSEBIN REB");
 
     ready_to_yield = 1;
 }

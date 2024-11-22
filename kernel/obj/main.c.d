@@ -7,7 +7,7 @@ obj/main.c.o: src/main.c src/limine.h src/screen.h src/sprint.h src/gdt.h \
  src/drivers/disk/ata.h src/drivers/disk/fat.h src/drivers/disk/mbr.h \
  src/a_tools/clock.h src/a_tools/convert_to_int.h \
  src/multitasking/multitasking.h src/interrupts/pic.h \
- src/software/binary.h src/../../external/apps/RoseLib/visual.h
+ src/software/binary.h
 src/limine.h:
 src/screen.h:
 src/sprint.h:
@@ -34,4 +34,3 @@ src/a_tools/convert_to_int.h:
 src/multitasking/multitasking.h:
 src/interrupts/pic.h:
 src/software/binary.h:
-src/../../external/apps/RoseLib/visual.h:

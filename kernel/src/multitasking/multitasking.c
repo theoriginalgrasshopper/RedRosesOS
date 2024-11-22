@@ -36,12 +36,16 @@ void Adam(){ // main2
 }
 
 // SLOTS -------------------------------
+void nothing_function(){
+}
+
 void taskA() {
 }
 
 void taskB(){
 }
 
+// SHELL
 void taskC(){
     while (1){
         bouquet_shell_task();
@@ -49,28 +53,42 @@ void taskC(){
 }
 
 // FUNCTIONS
-void quit(int exit_code) {
-    Task* current = current_task;
-    
-    sprint("\nA task with the PID of ", nice_orange);
-    sprint_int(current->pid);
-    sprint(" has exited.\nThe return code was ", nice_orange);
-    sprint_int(exit_code);
 
-    while (current->next != current_task) {
-        current = current->next;
+int exit(int exitcode){
+    kill_task(current_task);
+    sprint("\nA process has exited with the exit code of ", white);
+    sprint_int(exitcode);
+    return exitcode;
+}
+// expand as needed
+void task_create_wrapper(void (*main)()) {
+    if (!other_task.occupied) {
+        task_create(&other_task, main);
+        sprint("\nCreated a task on PID ", green);
+        sprint_int(other_task.pid);
+    } else if (!other_task2.occupied) {
+        task_create(&other_task2, main);
+        sprint("\nCreated a task on PID ", green);
+        sprint_int(other_task2.pid);
+    } else {
+        sprint("No task slots were available, overwriting the first slot...\n", yellow);
+        kill_task(&other_task);
+        task_create(&other_task, main);
+        sprint("\nOverwritten task slot, new PID is ", green);
+        sprint_int(other_task.pid);
     }
-    current->next = current_task->next;
-    pid--;
-    yield();
 }
 
-void process_end(int exit_code) {
-    quit(exit_code);
-    for (;;); // ensure the process does actually quit instead of shitting around
+void kill_task(Task *task){
+    if (task->rsp != NULL) {
+        pmm_free(task->rsp, STACK_SIZE);
+        task->rsp = NULL;
+    }
+    task->occupied = 0;
+    task_create(task, nothing_function);
 }
 
-void task_create(Task *task, void (*main)()) {
+void task_create(Task *task, void (*main)()){
     uint64_t* task_stack = (uint64_t*)pmm_alloc_quiet(STACK_SIZE);
     CPUState *state = task_stack + STACK_SIZE - sizeof(CPUState);
     
@@ -87,7 +105,7 @@ void multitasking_init(){
     task_create(&main_task, Eve);     
     task_create(&other_task, taskA);
     task_create(&other_task2, taskB);
-    task_create(&other_task3, taskC);
+    task_create(&other_task3, taskC); // shell
     task_create(&main_task2, Adam);
 
     main_task.next = &other_task;
@@ -97,6 +115,13 @@ void multitasking_init(){
     other_task3.next = &other_task;
 
     main_task2.next = &main_task;
+
+    other_task3.occupied = 1;
+    other_task2.occupied = 0;
+    other_task.occupied = 0;
+    main_task2.occupied = 1;
+    main_task.occupied  = 1;
+
     current_task = &main_task;
 
     sprint("\n\nmultitasking initialized stage 1\n", green);

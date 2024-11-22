@@ -239,9 +239,10 @@ void* pmm_alloc(size_t size) {
 
     uint64_t cur_uint64_t = (uint64_t) bitmap; // base of current uint64_t
 
-    sprint("[PMM] Need %i free pages\n", blue);
+    sprint("\nNeeded ", blue);
+    sprint_int(pages_needed);
+    sprint("Pages.\n", blue);
 
-    // TODO: Make allocation reach other uint64_ts
     for (size_t i = 0; i < free_entry_count; i++) {
         if (found_space) break;
         
@@ -261,7 +262,6 @@ void* pmm_alloc(size_t size) {
          */
 
         for (size_t uint64_t_i = 0; uint64_t_i < bitmap_sizes[i] / sizeof(uint64_t); uint64_t_i++) {
-            // sprint("[PMM] uint64_t Index: %i\n", uint64_t_i);
 
             for (size_t j = 0; j != i; j++)
                 cur_uint64_t += bitmap_sizes[j]; // find cur entry base
@@ -269,21 +269,13 @@ void* pmm_alloc(size_t size) {
             for (size_t pp = 0; pp < uint64_t_i; pp++)
                 cur_uint64_t += sizeof(uint64_t);
             
-            sprint("[PMM] Base of current uint64_t:\n", blue);
-
-            /**
-             * DEVsprint <--- LOL
-             * - I gotta use my bitmap_sizes to find where
-             * the uint64_t is. As using it like a simple array
-             * won't work. There isn't a fixed size.
-             * Each entry's bitmap has a different size.
-             */
+            sprint("Base of current uint64_t was ", blue);
+            sprint_int(cur_uint64_t);
+            sprint("\n", white);
 
             for (size_t b = 0; b < sizeof(uint64_t) * 8; b++) {
-                // sprint("[PMM] Bit: %i - uint64_t: %i - Free Entry: %i\n", b, uint64_t_i, i);
-
                 if (continued_free_bits >= pages_needed) {
-                    sprint("[PMM] Enough space has been found for allocation of %i pages\n", green);
+                    sprint("Enough space has been found for allocation of the pages.\n", green);
                     found_space = true;
                     break;
                 }
@@ -309,7 +301,15 @@ void* pmm_alloc(size_t size) {
         }
     }
 
-    sprint("[PMM] Found %i free pages starting at bit %i of uint64_t %i in entry %i\n", green);
+    sprint("Found ", green);
+    sprint_int(continued_free_bits);
+    sprint(" free pages, which start at bit ", green);
+    sprint_int(bitmap_offsets.bit_offset);
+    sprint(" of a 64 bit value ", green);
+    sprint_int(bitmap_offsets.u64_index);
+    sprint("in entry ", green);
+    sprint_int(bitmap_offsets.entry_index);
+    sprint("\n", white);
 
     if (found_start && found_space) {
         void* ptr;
@@ -339,7 +339,9 @@ void* pmm_alloc(size_t size) {
             free_i++;
         }
         ptr = (void*) (ptr_base + (uint64_t) (((bitmap_offsets.u64_index * 8) + bitmap_offsets.bit_offset) * PAGE_SIZE) + get_hhdm());
-        sprint("[PMM] Returning Pointer Address: %x\n", (uint64_t) ptr);
+        sprint("\nReturning Pointer Address: ", green);
+        sprint_int(ptr);
+        sprint("\n", white);
         return ptr;
     } else return NULL;
 }

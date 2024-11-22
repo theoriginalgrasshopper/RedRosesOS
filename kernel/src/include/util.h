@@ -21,13 +21,6 @@
 #define LCG_C 1013904223
 #define LCG_M 0xFFFFFFFF
 
-static void array_copy(unsigned char* source, unsigned char* dest) {
-    for (size_t i = 0; i < sizeof(source); i++) {
-        dest[i] = source[i];
-    }
-}
-
-
 // throw random stuff as arguments so u don't let stuff unused
 static inline void UNUSED(uint64_t, ...) {}
 

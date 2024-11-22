@@ -24,6 +24,7 @@ void sys_draw_pixel(char* UNUSED, int x, int y, int colour, ...) {
 }
 
 // syscall table
+// change MAX_SYSCALLS with every addition!!
 syscall syscalls[MAX_SYSCALLS] = {
     sys_print,
     sys_draw_pixel
